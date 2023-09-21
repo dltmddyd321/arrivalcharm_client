@@ -1,7 +1,8 @@
-package com.example.arrivalcharm
+package com.example.arrivalcharm.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.arrivalcharm.R
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

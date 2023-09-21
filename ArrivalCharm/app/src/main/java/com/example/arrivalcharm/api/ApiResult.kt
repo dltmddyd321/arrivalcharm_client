@@ -1,4 +1,4 @@
-package com.example.arrivalcharm
+package com.example.arrivalcharm.api
 
 sealed class ApiResult<out T> {
 
