@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.api.ApiResult
@@ -13,6 +14,11 @@ import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.datamodel.UserLoginInfo
 import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.example.arrivalcharm.viewmodel.LoginViewModel
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.Scope
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.NidOAuthLogin
 import com.navercorp.nid.oauth.OAuthLoginCallback
@@ -34,6 +40,35 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
+    private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
+    private val googleAuthLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+
+        try {
+            val account = task.getResult(ApiException::class.java)
+            val userId = account.id ?: return@registerForActivityResult
+
+            val loginObject = UserLoginInfo(
+                "google",
+                userId,
+                "이승용",
+                "1q2w3e4r!",
+                "dltmddyd1748@naver.com"
+            )
+            lifecycleScope.launch {
+                loginViewModel.startLogin(loginObject).collect { result ->
+                    when (result) {
+                        is ApiResult.Success -> Toast.makeText(this@MainActivity, result.data, Toast.LENGTH_LONG).show()
+                        is ApiResult.Error -> Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+
+        } catch (e: ApiException) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -41,13 +76,17 @@ class MainActivity : AppCompatActivity() {
 
         NaverIdLoginSDK.initialize(this, AppConst.NAVER_CLIENT_ID, AppConst.NAVER_CLIENT_SECRET, "ArrivalCharm")
 
-        lifecycleScope.launch {
-            adviceViewModel.fetchAdvice().collect { result ->
-                when (result) {
-                    is ApiResult.Success -> Toast.makeText(this@MainActivity, result.data, Toast.LENGTH_LONG).show()
-                    is ApiResult.Error -> Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_LONG).show()
-                }
-            }
+//        lifecycleScope.launch {
+//            adviceViewModel.fetchAdvice().collect { result ->
+//                when (result) {
+//                    is ApiResult.Success -> Toast.makeText(this@MainActivity, result.data, Toast.LENGTH_LONG).show()
+//                    is ApiResult.Error -> Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        }
+
+        binding.googleLoginBtn.setOnClickListener {
+            requestGoogleLogin()
         }
 
         binding.naverLoginBtn.setOnClickListener {
@@ -58,12 +97,10 @@ class MainActivity : AppCompatActivity() {
                     val userId = result.profile?.id
                     Timber.tag("네이버 로그인").i("id: $userId \ntoken: $naverToken")
                     Toast.makeText(this@MainActivity, "네이버 아이디 로그인 성공!", Toast.LENGTH_SHORT).show()
-
-                    val token = naverToken ?: return
                     val naverId = result.profile?.id ?: return
 
                     val loginObject = UserLoginInfo(
-                        token,
+                        "naver",
                         naverId,
                         "이승용",
                         "1q2w3e4r!",
@@ -109,5 +146,20 @@ class MainActivity : AppCompatActivity() {
 
             NaverIdLoginSDK.authenticate(this, oauthLoginCallback)
         }
+    }
+
+    private fun getGoogleClient(): GoogleSignInClient {
+        val googleSignInOption = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestServerAuthCode(AppConst.GOOGLE_CLIENT_ID)
+            .requestEmail()
+            .build()
+
+        return GoogleSignIn.getClient(this, googleSignInOption)
+    }
+
+    private fun requestGoogleLogin() {
+        googleSignInClient.signOut()
+        val signInIntent = googleSignInClient.signInIntent
+        googleAuthLauncher.launch(signInIntent)
     }
 }

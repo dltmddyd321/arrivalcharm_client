@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "151091018182",
+    "project_id": "arrival-charm",
+    "storage_bucket": "arrival-charm.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151091018182:android:120eaccee5e2afa4d8dac7",
+        "android_client_info": {
+          "package_name": "com.example.arrivalcharm"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "151091018182-kf9arikiebr4jkh7farl3a332u3ngcuu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.arrivalcharm",
+            "certificate_hash": "5cfc8a22ddcce33988e5d1525d708464df0355ff"
+          }
+        },
+        {
+          "client_id": "151091018182-mb44kjv3pbgfiagqh9s18jva8ef17caf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3v7U16pb79-iHDmB6lr0wISb2Lz2HO40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "151091018182-mb44kjv3pbgfiagqh9s18jva8ef17caf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -38,6 +39,15 @@ android {
 }
 
 dependencies {
+
+    // Import the Firebase BoM
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+    // Google Auth SDK
+    implementation 'com.google.android.gms:play-services-auth:20.7.0'
 
     // Naver SDK
     implementation 'com.navercorp.nid:oauth-jdk8:5.1.0' // jdk 8
