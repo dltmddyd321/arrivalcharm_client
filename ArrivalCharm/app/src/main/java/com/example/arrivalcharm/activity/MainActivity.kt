@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
 //        lifecycleScope.launch {
 //            adviceViewModel.fetchAdvice().collect { result ->
 //                when (result) {
-//                    is ApiResult.Success -> Toast.makeText(this@MainActivity, result.data, Toast.LENGTH_LONG).show()
+//                    is ApiResult.Success -> Toast.makeText(this@MainActivi₩ty, result.data, Toast.LENGTH_LONG).show()
 //                    is ApiResult.Error -> Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_LONG).show()
 //                }
 //            }
