@@ -41,6 +41,8 @@ android {
 }
 
 dependencies {
+    // KAKAO SDK
+    implementation 'com.kakao.sdk:v2-user:2.10.0'
 
     implementation 'androidx.activity:activity-compose:1.7.2'
     // Compose Material Design
