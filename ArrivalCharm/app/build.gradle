@@ -41,6 +41,10 @@ android {
 }
 
 dependencies {
+    // Room
+    implementation "androidx.room:room-runtime:2.5.2"
+    kapt "androidx.room:room-compiler:2.5.2"
+
     // KAKAO SDK
     implementation 'com.kakao.sdk:v2-user:2.10.0'
 
