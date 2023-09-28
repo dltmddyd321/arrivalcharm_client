@@ -1,4 +1,4 @@
-package com.example.arrivalcharm.db
+package com.example.arrivalcharm.db.room
 
 import com.example.arrivalcharm.datamodel.Location
 import kotlinx.coroutines.Dispatchers

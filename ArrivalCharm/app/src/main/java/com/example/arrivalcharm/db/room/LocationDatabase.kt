@@ -1,4 +1,4 @@
-package com.example.arrivalcharm.db
+package com.example.arrivalcharm.db.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

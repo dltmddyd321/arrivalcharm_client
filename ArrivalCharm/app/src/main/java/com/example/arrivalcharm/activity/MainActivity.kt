@@ -1,6 +1,5 @@
 package com.example.arrivalcharm.activity
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -8,7 +7,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.datamodel.Location
-import com.example.arrivalcharm.db.LocationViewModel
+import com.example.arrivalcharm.db.room.LocationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

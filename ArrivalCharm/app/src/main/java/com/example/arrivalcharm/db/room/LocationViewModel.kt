@@ -1,4 +1,4 @@
-package com.example.arrivalcharm.db
+package com.example.arrivalcharm.db.room
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
