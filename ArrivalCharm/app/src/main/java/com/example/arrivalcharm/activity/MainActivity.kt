@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.datamodel.Location
+import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.db.room.LocationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val locationViewModel: LocationViewModel by viewModels()
+    private val dataStoreViewModel: DatastoreViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +46,14 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(this@MainActivity, "${list.size}", Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+
+        binding.checkPrefs.setOnClickListener {
+//            dataStoreViewModel.putAuthToken("fgjhbyfhauidw-r432adaAffggd430as")
+            lifecycleScope.launch {
+                val token = dataStoreViewModel.getAuthToken()
+                Toast.makeText(this@MainActivity, token, Toast.LENGTH_LONG).show()
             }
         }
 
