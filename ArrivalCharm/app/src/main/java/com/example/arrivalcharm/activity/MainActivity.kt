@@ -1,5 +1,6 @@
 package com.example.arrivalcharm.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -28,16 +29,16 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.goLoginBtn.setOnClickListener {
-            val location = Location(
-                2,
-                "경기도 광주시 중앙로 22번길 14-16 12791",
-                "46.2344",
-                "185.5434",
-                System.currentTimeMillis()
-            )
-            CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
+//            val location = Location(
+//                2,
+//                "경기도 광주시 중앙로 22번길 14-16 12791",
+//                "46.2344",
+//                "185.5434",
+//                System.currentTimeMillis()
+//            )
+//            CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
 
-//            startActivity(Intent(this, LoginActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.checkDB.setOnClickListener {

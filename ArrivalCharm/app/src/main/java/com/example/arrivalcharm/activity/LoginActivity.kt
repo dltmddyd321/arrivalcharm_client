@@ -55,18 +55,14 @@ class LoginActivity : AppCompatActivity() {
                 val loginObject = UserLoginInfo(
                     LoginType.GOOGLE.name.lowercase(),
                     userId,
-                    "이승용",
-                    "1q2w3e4r!",
-                    "dltmddyd1748@naver.com"
+                    account.email ?: ""
                 )
                 lifecycleScope.launch {
                     loginViewModel.startLogin(loginObject).collect { result ->
                         when (result) {
-                            is ApiResult.Success -> Toast.makeText(
-                                this@LoginActivity,
-                                result.data,
-                                Toast.LENGTH_LONG
-                            ).show()
+                            is ApiResult.Success -> {
+                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                            }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
                                 result.message,
@@ -110,9 +106,7 @@ class LoginActivity : AppCompatActivity() {
                     val loginObject = UserLoginInfo(
                         LoginType.KAKAO.name.lowercase(),
                         user?.id.toString(),
-                        "이승용",
-                        "1q2w3e4r!",
-                        "dinoinventor@naver.com"
+                        user?.kakaoAccount?.email ?: ""
                     )
                     lifecycleScope.launch {
                         loginViewModel.startLogin(loginObject).collect { result ->
@@ -167,9 +161,7 @@ class LoginActivity : AppCompatActivity() {
                 val loginObject = UserLoginInfo(
                     LoginType.NAVER.name.lowercase(),
                     naverId,
-                    "이승용",
-                    "1q2w3e4r!",
-                    "dltmddyd321@naver.com"
+                    result.profile?.email ?: ""
                 )
                 lifecycleScope.launch {
                     loginViewModel.startLogin(loginObject).collect { result ->
