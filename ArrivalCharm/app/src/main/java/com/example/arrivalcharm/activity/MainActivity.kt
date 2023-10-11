@@ -1,34 +1,38 @@
 package com.example.arrivalcharm.activity
 
 import android.animation.ObjectAnimator
-import android.animation.PropertyValuesHolder
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.animation.AlphaAnimation
-import android.view.animation.Animation
-import android.view.animation.AnimationSet
 import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.example.arrivalcharm.R
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.db.room.LocationViewModel
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
 
+@AndroidEntryPoint
+class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    private var map: GoogleMap? = null
     private lateinit var splash: SplashScreen
     private lateinit var binding: ActivityMainBinding
     private val locationViewModel: LocationViewModel by viewModels()
@@ -42,6 +46,10 @@ class MainActivity : AppCompatActivity() {
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val mapFragment: SupportMapFragment? =
+            supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
 
         binding.goLoginBtn.setOnClickListener {
 //            val location = Location(
@@ -101,6 +109,21 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+
+        val SEOUL = LatLng(37.556, 126.97)
+
+        val markerOptions = MarkerOptions()
+        markerOptions.position(SEOUL)
+        markerOptions.title("서울")
+        markerOptions.snippet("한국 수도")
+
+        map?.addMarker(markerOptions)
+
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL, 10f))
     }
 
 
