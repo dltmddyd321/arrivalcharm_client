@@ -1,8 +1,12 @@
 package com.example.arrivalcharm.activity
 
+import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.view.animation.AnticipateInterpolator
@@ -10,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
+import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +22,11 @@ import com.example.arrivalcharm.R
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.db.room.LocationViewModel
+import com.example.arrivalcharm.util.RequestPermissionUtil
+import com.example.arrivalcharm.util.RequestPermissionUtil.Companion.REQUEST_LOCATION
+import com.example.arrivalcharm.util.RequestPermissionUtil.Companion.permissionsLocationDownApi29Impl
+import com.example.arrivalcharm.util.RequestPermissionUtil.Companion.permissionsLocationUpApi29Impl
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -37,19 +47,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
     private val locationViewModel: LocationViewModel by viewModels()
     private val dataStoreViewModel: DatastoreViewModel by viewModels()
+    private var lat = 0.0
+    private var lon = 0.0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         splash = installSplashScreen()
         startSplash()
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val mapFragment: SupportMapFragment? =
             supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
+
+        getLocation()
 
         binding.goLoginBtn.setOnClickListener {
 //            val location = Location(
@@ -114,69 +126,54 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
-        val SEOUL = LatLng(37.556, 126.97)
+        val seoul = LatLng(37.556, 126.97)
 
         val markerOptions = MarkerOptions()
-        markerOptions.position(SEOUL)
+        markerOptions.position(seoul)
         markerOptions.title("서울")
         markerOptions.snippet("한국 수도")
 
         map?.addMarker(markerOptions)
 
-        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL, 10f))
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10f))
     }
 
+    private fun getLocation() {
+        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-//    private fun startSplash() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            splashScreen.setOnExitAnimationListener { splashView ->
-//                val fadeIn = AlphaAnimation(0f, 1f)
-//                fadeIn.duration = 1000
-//
-//                val fadeOut = AlphaAnimation(1f, 0f)
-//                fadeOut.startOffset = 1000
-//                fadeOut.duration = 1000
-//
-//                val animationSet = AnimationSet(true)
-//                animationSet.addAnimation(fadeIn)
-//                animationSet.addAnimation(fadeOut)
-//
-//                splashView.iconView?.startAnimation(animationSet)
-//
-//                animationSet.setAnimationListener(object : Animation.AnimationListener {
-//                    override fun onAnimationStart(animation: Animation?) {
-//                    }
-//
-//                    override fun onAnimationEnd(animation: Animation?) {
-//                        splashView.remove()
-//                    }
-//
-//                    override fun onAnimationRepeat(animation: Animation?) {}
-//                })
-//            }
-//        }
-//    }
-
-//    @SuppressLint("Recycle")
-//    private fun startSplash() {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//            splashScreen.setOnExitAnimationListener { splashView ->
-//                val icon = splashView.iconView ?: return@setOnExitAnimationListener
-//                icon.rotation = 90f
-//
-//                ObjectAnimator.ofFloat(
-//                    icon,
-//                    "rotation",
-//                    0f
-//                ).apply {
-//                    interpolator = AnticipateInterpolator()
-//                    duration = 1000L
-//                    doOnEnd {
-//                        splashView.remove()
-//                    }
-//                    start()
-//                }
-//            }
-//        }
-//    }
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    permissionsLocationUpApi29Impl,
+                    REQUEST_LOCATION
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    permissionsLocationDownApi29Impl,
+                    REQUEST_LOCATION
+                )
+            }
+        } else {
+            fusedLocationProviderClient.lastLocation
+                .addOnSuccessListener { success: Location? ->
+                    success?.let { location ->
+                        lat = location.latitude
+                        lon = location.longitude
+                        Toast.makeText(this, "lat : $lat / lon : $lon", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener { fail ->
+                    Toast.makeText(this, fail.localizedMessage, Toast.LENGTH_SHORT).show()
+                }
+        }
+    }
 }
