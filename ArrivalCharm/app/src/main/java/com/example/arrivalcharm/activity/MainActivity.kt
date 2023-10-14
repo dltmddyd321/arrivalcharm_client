@@ -3,12 +3,12 @@ package com.example.arrivalcharm.activity
 import android.Manifest
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Looper
 import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -22,11 +22,8 @@ import com.example.arrivalcharm.R
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.db.room.LocationViewModel
-import com.example.arrivalcharm.util.RequestPermissionUtil
-import com.example.arrivalcharm.util.RequestPermissionUtil.Companion.REQUEST_LOCATION
-import com.example.arrivalcharm.util.RequestPermissionUtil.Companion.permissionsLocationDownApi29Impl
-import com.example.arrivalcharm.util.RequestPermissionUtil.Companion.permissionsLocationUpApi29Impl
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -47,8 +44,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMainBinding
     private val locationViewModel: LocationViewModel by viewModels()
     private val dataStoreViewModel: DatastoreViewModel by viewModels()
-    private var lat = 0.0
-    private var lon = 0.0
+    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
+    lateinit var mLastLocation: Location
+    private lateinit var mLocationRequest: LocationRequest
+    private val REQUEST_PERMISSION_LOCATION = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,7 +60,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
-        getLocation()
+        mLocationRequest = LocationRequest.create().apply {
+            priority = PRIORITY_HIGH_ACCURACY
+        }
 
         binding.goLoginBtn.setOnClickListener {
 //            val location = Location(
@@ -123,10 +124,56 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    private fun startLocationUpdate() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+            && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        mFusedLocationProviderClient?.requestLocationUpdates(mLocationRequest, mLocationCallback, Looper.getMainLooper())
+    }
+
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            locationResult.lastLocation?.let { onLocationChanged(it) }
+        }
+    }
+
+    private fun onLocationChanged(location: Location) {
+        mLastLocation = location
+    }
+
+
+    private fun checkPermissionForLocation(): Boolean {
+        return if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            true
+        } else {
+            // 권한이 없으므로 권한 요청 보내기
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_PERMISSION_LOCATION)
+            false
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_PERMISSION_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdate()
+            } else {
+                Toast.makeText(this, "권한이 없어 해당 기능을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
+        if (checkPermissionForLocation()) startLocationUpdate()
         map = googleMap
 
-        val seoul = LatLng(37.556, 126.97)
+        val seoul = LatLng(37.348, -121.9002)
 
         val markerOptions = MarkerOptions()
         markerOptions.position(seoul)
@@ -136,44 +183,5 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         map?.addMarker(markerOptions)
 
         map?.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10f))
-    }
-
-    private fun getLocation() {
-        val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    permissionsLocationUpApi29Impl,
-                    REQUEST_LOCATION
-                )
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    permissionsLocationDownApi29Impl,
-                    REQUEST_LOCATION
-                )
-            }
-        } else {
-            fusedLocationProviderClient.lastLocation
-                .addOnSuccessListener { success: Location? ->
-                    success?.let { location ->
-                        lat = location.latitude
-                        lon = location.longitude
-                        Toast.makeText(this, "lat : $lat / lon : $lon", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                .addOnFailureListener { fail ->
-                    Toast.makeText(this, fail.localizedMessage, Toast.LENGTH_SHORT).show()
-                }
-        }
     }
 }
