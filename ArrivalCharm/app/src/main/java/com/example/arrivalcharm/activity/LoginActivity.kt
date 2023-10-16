@@ -12,6 +12,7 @@ import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.core.AppConst
 import com.example.arrivalcharm.databinding.ActivityLoginBinding
 import com.example.arrivalcharm.datamodel.UserLoginInfo
+import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.type.LoginType
 import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.example.arrivalcharm.viewmodel.LoginViewModel
@@ -41,6 +42,8 @@ class LoginActivity : AppCompatActivity() {
     @NetworkModule.Main
     private val loginViewModel: LoginViewModel by viewModels()
 
+    private val dataStoreViewModel: DatastoreViewModel by viewModels()
+
     private lateinit var binding: ActivityLoginBinding
 
     private val googleSignInClient: GoogleSignInClient by lazy { getGoogleClient() }
@@ -62,6 +65,7 @@ class LoginActivity : AppCompatActivity() {
                         when (result) {
                             is ApiResult.Success -> {
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                dataStoreViewModel.putAuthToken(result.data.accessToken)
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,

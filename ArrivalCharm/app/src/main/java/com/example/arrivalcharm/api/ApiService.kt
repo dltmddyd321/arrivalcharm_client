@@ -1,6 +1,7 @@
 package com.example.arrivalcharm.api
 
 import com.example.arrivalcharm.datamodel.AdviceResultModel
+import com.example.arrivalcharm.datamodel.LoginResultModel
 import com.example.arrivalcharm.datamodel.UserLoginInfo
 import retrofit2.Response
 import retrofit2.http.Body
@@ -17,5 +18,5 @@ interface ApiService {
     @POST("/api/v1/auth/login/oauth")
     suspend fun requestLogin(
         @Body oAuth2UserInfo: UserLoginInfo
-    ): Response<Unit>
+    ): Response<LoginResultModel>
 }
