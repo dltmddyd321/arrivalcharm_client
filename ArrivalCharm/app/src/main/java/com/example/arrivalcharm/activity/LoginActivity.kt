@@ -58,7 +58,8 @@ class LoginActivity : AppCompatActivity() {
                 val loginObject = UserLoginInfo(
                     LoginType.GOOGLE.name.lowercase(),
                     userId,
-                    account.email ?: ""
+                    account.email ?: "",
+                    account.displayName ?: ""
                 )
                 lifecycleScope.launch {
                     loginViewModel.startLogin(loginObject).collect { result ->
@@ -110,16 +111,16 @@ class LoginActivity : AppCompatActivity() {
                     val loginObject = UserLoginInfo(
                         LoginType.KAKAO.name.lowercase(),
                         user?.id.toString(),
-                        user?.kakaoAccount?.email ?: ""
+                        user?.kakaoAccount?.email ?: "",
+                        user?.kakaoAccount?.name ?: ""
                     )
                     lifecycleScope.launch {
                         loginViewModel.startLogin(loginObject).collect { result ->
                             when (result) {
-                                is ApiResult.Success -> Toast.makeText(
-                                    this@LoginActivity,
-                                    result.data,
-                                    Toast.LENGTH_LONG
-                                ).show()
+                                is ApiResult.Success -> {
+                                    dataStoreViewModel.putAuthToken(result.data.accessToken)
+                                    Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                }
                                 is ApiResult.Error -> Toast.makeText(
                                     this@LoginActivity,
                                     result.message,
@@ -165,16 +166,16 @@ class LoginActivity : AppCompatActivity() {
                 val loginObject = UserLoginInfo(
                     LoginType.NAVER.name.lowercase(),
                     naverId,
-                    result.profile?.email ?: ""
+                    result.profile?.email ?: "",
+                    result.profile?.name ?: ""
                 )
                 lifecycleScope.launch {
                     loginViewModel.startLogin(loginObject).collect { result ->
                         when (result) {
-                            is ApiResult.Success -> Toast.makeText(
-                                this@LoginActivity,
-                                result.data,
-                                Toast.LENGTH_LONG
-                            ).show()
+                            is ApiResult.Success -> {
+                                dataStoreViewModel.putAuthToken(result.data.accessToken)
+                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                            }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
                                 result.message,
