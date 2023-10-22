@@ -36,9 +36,6 @@ import timber.log.Timber
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
-    @NetworkModule.Advice
-    private val adviceViewModel: AdviceViewModel by viewModels()
-
     @NetworkModule.Main
     private val loginViewModel: LoginViewModel by viewModels()
 

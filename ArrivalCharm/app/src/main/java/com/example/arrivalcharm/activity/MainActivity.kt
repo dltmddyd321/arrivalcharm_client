@@ -93,16 +93,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this@MainActivity, token, Toast.LENGTH_LONG).show()
             }
         }
-
-        //TODO: 추후 SplashAcitvity로 옮겨질 예정
-//        lifecycleScope.launch {
-//            adviceViewModel.fetchAdvice().collect { result ->
-//                when (result) {
-//                    is ApiResult.Success -> Toast.makeText(this@MainActivi₩ty, result.data, Toast.LENGTH_LONG).show()
-//                    is ApiResult.Error -> Toast.makeText(this@MainActivity, result.message, Toast.LENGTH_LONG).show()
-//                }
-//            }
-//        }
     }
 
     @SuppressLint("Recycle")
