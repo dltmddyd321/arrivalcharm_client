@@ -1,14 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/purple_200"
+    android:background="@color/white"
     tools:context=".fragment.HomeFragment">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_home" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/wiseText"
+            android:layout_width="match_parent"
+            android:layout_height="40dp" />
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/mainSearch"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:focusable="true"
+            android:padding="20dp"
+            app:queryHint="검색어를 입력하시오" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_btn"
+                android:text="집" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_btn"
+                android:text="회사" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_btn"
+                android:text="집" />
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_margin="30dp"
+                android:layout_weight="1"
+                android:background="@drawable/background_btn"
+                android:text="회사" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
 
 </FrameLayout>
