@@ -26,9 +26,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var mapFragment: MapFragment
     private lateinit var settingFragment: SettingFragment
 
-    @NetworkModule.Advice
-    private val adviceViewModel: AdviceViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
@@ -54,15 +51,6 @@ class HomeActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
 
         })
-
-        lifecycleScope.launch {
-            adviceViewModel.fetchAdvice().collect { result ->
-                when (result) {
-                    is ApiResult.Success -> Toast.makeText(this@HomeActivity, result.data, Toast.LENGTH_LONG).show()
-                    is ApiResult.Error -> Toast.makeText(this@HomeActivity, result.message, Toast.LENGTH_LONG).show()
-                }
-            }
-        }
     }
 
     private fun replaceTabView(selectedTab: Fragment) {

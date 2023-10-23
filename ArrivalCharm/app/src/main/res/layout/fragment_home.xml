@@ -15,7 +15,10 @@
         <TextView
             android:id="@+id/wiseText"
             android:layout_width="match_parent"
-            android:layout_height="40dp" />
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="명언"
+            android:textAlignment="center" />
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/mainSearch"
