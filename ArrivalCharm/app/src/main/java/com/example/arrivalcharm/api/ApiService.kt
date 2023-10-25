@@ -2,12 +2,10 @@ package com.example.arrivalcharm.api
 
 import com.example.arrivalcharm.datamodel.AdviceResultModel
 import com.example.arrivalcharm.datamodel.LoginResultModel
+import com.example.arrivalcharm.datamodel.RefreshTokenBody
 import com.example.arrivalcharm.datamodel.UserLoginInfo
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface ApiService {
     @GET("/advice/search/{query}")
@@ -19,4 +17,14 @@ interface ApiService {
     suspend fun requestLogin(
         @Body oAuth2UserInfo: UserLoginInfo
     ): Response<LoginResultModel>
+
+    @POST("/api/v1/auth/accessToken")
+    suspend fun tokenRefresh(
+        @Body refreshToken: RefreshTokenBody
+    )
+
+    @GET("/api/v1/destination")
+    suspend fun getDestinationList(
+        @HeaderMap headers: HashMap<String, String>
+    )
 }

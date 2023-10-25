@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 //            )
 //            CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
 
-            startActivity(Intent(this, HomeActivity::class.java))
+            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.checkDB.setOnClickListener {
