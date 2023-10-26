@@ -22,4 +22,14 @@ class DatastoreViewModel @Inject constructor(
     suspend fun getAuthToken(): String = withContext(Dispatchers.IO) {
         datastoreRepo.getString("AUTH_TOKEN") ?: ""
     }
+
+    fun putRefreshToken(value: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            datastoreRepo.putString("REFRESH_TOKEN", value)
+        }
+    }
+
+    suspend fun getRefreshToken(): String = withContext(Dispatchers.IO) {
+        datastoreRepo.getString("REFRESH_TOKEN") ?: ""
+    }
 }

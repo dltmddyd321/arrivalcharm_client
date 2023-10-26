@@ -21,10 +21,19 @@ interface ApiService {
     @POST("/api/v1/auth/accessToken")
     suspend fun tokenRefresh(
         @Body refreshToken: RefreshTokenBody
-    )
+    ): Response<Unit>
 
     @GET("/api/v1/destination")
     suspend fun getDestinationList(
         @HeaderMap headers: HashMap<String, String>
-    )
+    ): Response<Unit>
+
+    @POST("/api/v1/destination")
+    suspend fun updateDestination(
+        @HeaderMap headers: HashMap<String, String>,
+        @Query("address") address: String,
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("name") name: String
+    ): Response<Unit>
 }

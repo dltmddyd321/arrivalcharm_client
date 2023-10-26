@@ -19,9 +19,11 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.R
+import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.db.room.LocationViewModel
+import com.example.arrivalcharm.viewmodel.CheckDestinationViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -31,7 +33,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -39,6 +43,8 @@ import kotlinx.coroutines.withContext
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    @NetworkModule.Main
+    private val checkDatastoreViewModel: CheckDestinationViewModel by viewModels()
     private var map: GoogleMap? = null
     private lateinit var splash: SplashScreen
     private lateinit var binding: ActivityMainBinding
@@ -65,23 +71,31 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.goLoginBtn.setOnClickListener {
-//            val location = Location(
-//                2,
-//                "경기도 광주시 중앙로 22번길 14-16 12791",
-//                "46.2344",
-//                "185.5434",
-//                System.currentTimeMillis()
-//            )
-//            CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
+            val location = com.example.arrivalcharm.datamodel.Location(
+                2,
+                "경기도 광주시 중앙로 22번길 14-16 12791",
+                "46.2344",
+                "185.5434",
+                System.currentTimeMillis(),
+                "HOME!"
+            )
+            CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
 
-            startActivity(Intent(this, LoginActivity::class.java))
+//            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.checkDB.setOnClickListener {
+//            lifecycleScope.launch {
+//                val list = locationViewModel.getAllLocation()
+//                withContext(Dispatchers.Main) {
+//                    Toast.makeText(this@MainActivity, "${list.size}", Toast.LENGTH_LONG).show()
+//                }
+//            }
+
             lifecycleScope.launch {
-                val list = locationViewModel.getAllLocation()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@MainActivity, "${list.size}", Toast.LENGTH_LONG).show()
+                val token = dataStoreViewModel.getAuthToken()
+                checkDatastoreViewModel.getDestinationList(token).collect {
+
                 }
             }
         }

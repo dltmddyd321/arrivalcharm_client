@@ -9,5 +9,6 @@ data class Location(
     val address: String,
     val lon: String,
     val lat: String,
-    val createdAt: Long
+    val createdAt: Long,
+    val name: String = "NONE"
 )
