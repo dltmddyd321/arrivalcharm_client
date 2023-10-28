@@ -9,6 +9,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -66,8 +67,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
 
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
         mLocationRequest = LocationRequest.create().apply {
-            priority = PRIORITY_HIGH_ACCURACY
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 5000
+            fastestInterval = 2000
         }
 
         binding.goLoginBtn.setOnClickListener {
@@ -128,7 +133,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun startLocationUpdate() {
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
             && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return
@@ -144,15 +148,28 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun onLocationChanged(location: Location) {
         mLastLocation = location
+
+        val seoul = LatLng(location.latitude, location.longitude)
+
+        val markerOptions = MarkerOptions()
+        markerOptions.position(seoul)
+        markerOptions.title("서울")
+        markerOptions.snippet("한국 수도")
+
+        map?.addMarker(markerOptions)
+
+        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10f))
+
     }
 
 
     private fun checkPermissionForLocation(): Boolean {
-        return if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        return if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             true
         } else {
             // 권한이 없으므로 권한 요청 보내기
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_PERMISSION_LOCATION)
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_PERMISSION_LOCATION)
             false
         }
     }
@@ -173,18 +190,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        if (checkPermissionForLocation()) startLocationUpdate()
         map = googleMap
-
-        val seoul = LatLng(37.348, -121.9002)
-
-        val markerOptions = MarkerOptions()
-        markerOptions.position(seoul)
-        markerOptions.title("서울")
-        markerOptions.snippet("한국 수도")
-
-        map?.addMarker(markerOptions)
-
-        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10f))
+        if (checkPermissionForLocation()) startLocationUpdate()
     }
 }
