@@ -72,12 +72,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding.goLoginBtn.setOnClickListener {
             val location = com.example.arrivalcharm.datamodel.Location(
-                2,
-                "경기도 광주시 중앙로 22번길 14-16 12791",
-                "46.2344",
-                "185.5434",
-                System.currentTimeMillis(),
-                "HOME!"
+                address = "경기도 광주시 중앙로 22번길 14-16 12791",
+                lat = "46.2344",
+                lon = "185.5434",
+                createdAt = System.currentTimeMillis(),
+                name = "HOME!"
             )
             CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
 
