@@ -63,7 +63,10 @@ class LoginActivity : AppCompatActivity() {
                         when (result) {
                             is ApiResult.Success -> {
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
-                                dataStoreViewModel.putAuthToken(result.data.accessToken)
+                                val resultData = result.data
+                                dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                val refreshToken = resultData.refreshToken
+                                val photo = resultData.photo
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,

@@ -36,4 +36,9 @@ interface ApiService {
         @Query("lon") lon: String,
         @Query("name") name: String
     ): Response<Unit>
+
+    @GET("/api/v1/destination/recent")
+    suspend fun getRecentList(
+        @HeaderMap headers: HashMap<String, String>
+    ): Response<Unit>
 }

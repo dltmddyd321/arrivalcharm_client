@@ -20,7 +20,7 @@ class DatastoreViewModel @Inject constructor(
     }
 
     suspend fun getAuthToken(): String = withContext(Dispatchers.IO) {
-        datastoreRepo.getString("AUTH_TOKEN") ?: ""
+        ("Bearer " + datastoreRepo.getString("AUTH_TOKEN"))
     }
 
     fun putRefreshToken(value: String) {

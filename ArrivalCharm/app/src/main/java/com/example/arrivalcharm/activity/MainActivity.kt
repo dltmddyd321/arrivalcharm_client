@@ -25,6 +25,7 @@ import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.db.room.LocationViewModel
 import com.example.arrivalcharm.viewmodel.CheckDestinationViewModel
+import com.example.arrivalcharm.viewmodel.SaveDestinationViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -46,6 +47,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     @NetworkModule.Main
     private val checkDatastoreViewModel: CheckDestinationViewModel by viewModels()
+
+    @NetworkModule.Main
+    private val saveDestinationViewModel: SaveDestinationViewModel by viewModels()
+
     private var map: GoogleMap? = null
     private lateinit var splash: SplashScreen
     private lateinit var binding: ActivityMainBinding
@@ -83,7 +88,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 createdAt = System.currentTimeMillis(),
                 name = "HOME!"
             )
-            CoroutineScope(Dispatchers.IO).launch { locationViewModel.insertLocation(location = location) }
+            lifecycleScope.launch {
+                val token = dataStoreViewModel.getAuthToken()
+//                locationViewModel.insertLocation(location = location)
+                saveDestinationViewModel.saveDestination(token, location)
+            }
 
 //            startActivity(Intent(this, LoginActivity::class.java))
         }
