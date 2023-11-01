@@ -46,9 +46,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         mLocationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-            interval = 5000
-            fastestInterval = 2000
+            priority = Priority.PRIORITY_HIGH_ACCURACY
         }
         startLocationUpdate()
     }
