@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         mLocationRequest = LocationRequest.create().apply {
-            priority = PRIORITY_HIGH_ACCURACY
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
         binding.goLoginBtn.setOnClickListener {
@@ -87,12 +87,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 name = "HOME!"
             )
             lifecycleScope.launch {
-                val token = dataStoreViewModel.getAuthToken()
+//                val token = dataStoreViewModel.getAuthToken()
 //                locationViewModel.insertLocation(location = location)
-                saveDestinationViewModel.saveDestination(token, location)
+//                saveDestinationViewModel.saveDestination(token, location)
             }
 
-//            startActivity(Intent(this, LoginActivity::class.java))
+            startActivity(Intent(this, HomeActivity::class.java))
         }
 
         binding.checkDB.setOnClickListener {

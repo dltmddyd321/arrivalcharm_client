@@ -1,6 +1,7 @@
 package com.example.arrivalcharm.fragment
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
@@ -27,6 +28,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
     lateinit var mLastLocation: Location
     private lateinit var mLocationRequest: LocationRequest
+    private val REQUEST_PERMISSION_LOCATION = 100
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,9 +48,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         mLocationRequest = LocationRequest.create().apply {
-            priority = Priority.PRIORITY_HIGH_ACCURACY
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-        startLocationUpdate()
     }
 
     private fun startLocationUpdate() {
@@ -81,5 +82,24 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-    override fun onMapReady(googleMap: GoogleMap) { map = googleMap }
+    private fun checkPermissionForLocation(): Boolean {
+        return if (requireActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+            && requireActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            true
+        } else {
+            // 권한이 없으므로 권한 요청 보내기
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_PERMISSION_LOCATION)
+            false
+        }
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        map = googleMap
+        if (checkPermissionForLocation()) startLocationUpdate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (map != null) startLocationUpdate()
+    }
 }
