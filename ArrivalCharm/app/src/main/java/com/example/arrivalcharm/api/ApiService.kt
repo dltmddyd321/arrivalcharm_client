@@ -1,9 +1,6 @@
 package com.example.arrivalcharm.api
 
-import com.example.arrivalcharm.datamodel.AdviceResultModel
-import com.example.arrivalcharm.datamodel.LoginResultModel
-import com.example.arrivalcharm.datamodel.RefreshTokenBody
-import com.example.arrivalcharm.datamodel.UserLoginInfo
+import com.example.arrivalcharm.datamodel.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -35,7 +32,7 @@ interface ApiService {
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("name") name: String
-    ): Response<Unit>
+    ): Response<Destination>
 
     @GET("/api/v1/destination/recent")
     suspend fun getRecentList(

@@ -20,6 +20,7 @@ import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.R
+import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
@@ -79,20 +80,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.goLoginBtn.setOnClickListener {
-            val location = com.example.arrivalcharm.datamodel.Location(
-                address = "경기도 광주시 중앙로 22번길 14-16 12791",
-                lat = "46.2344",
-                lon = "185.5434",
-                createdAt = System.currentTimeMillis(),
-                name = "HOME!"
-            )
             lifecycleScope.launch {
-//                val token = dataStoreViewModel.getAuthToken()
-//                locationViewModel.insertLocation(location = location)
-//                saveDestinationViewModel.saveDestination(token, location)
+                val location = com.example.arrivalcharm.datamodel.Location(
+                    address = "경기도 광주시 중앙로 22번길 14-16 12791",
+                    lat = "46.2344",
+                    lon = "185.5434",
+                    createdAt = System.currentTimeMillis(),
+                    name = "HOME!",
+                    number = 0
+                )
+
+                val token = dataStoreViewModel.getAuthToken()
+                saveDestinationViewModel.saveDestination(token, location).collect { result ->
+                    when (result) {
+                        is ApiResult.Success -> {
+                            location.number = result.data?.id ?: 0
+                            CoroutineScope(Dispatchers.IO).launch {
+                                locationViewModel.insertLocation(location = location)
+                            }
+                        }
+                        else -> {
+
+                        }
+                    }
+
+                }
             }
 
-            startActivity(Intent(this, HomeActivity::class.java))
+//            startActivity(Intent(this, LoginActivity::class.java))
         }
 
         binding.checkDB.setOnClickListener {

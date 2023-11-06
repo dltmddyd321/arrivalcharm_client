@@ -10,5 +10,6 @@ data class Location(
     val lon: String,
     val lat: String,
     val createdAt: Long,
-    val name: String = "NONE"
+    val name: String = "NONE",
+    var number: Int
 )
