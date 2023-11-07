@@ -1,6 +1,7 @@
 package com.example.arrivalcharm.api
 
 import com.example.arrivalcharm.datamodel.*
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -38,4 +39,34 @@ interface ApiService {
     suspend fun getRecentList(
         @HeaderMap headers: HashMap<String, String>
     ): Response<Unit>
+
+    @Multipart
+    @PUT("/api/v1/users/{id}")
+    suspend fun editUserInfo(
+        @HeaderMap headers: HashMap<String, String>,
+        @Query("displayUsername") displayUsername: String,
+        @Part file : MultipartBody.Part,
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    @PUT("/api/v1/destination/{id}")
+    suspend fun editDestination(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int,
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("name") name: String
+    ): Response<Destination>
+
+    @DELETE("/api/v1/destination/{id}")
+    suspend fun deleteDestination(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int
+    ): Response<Unit>
+
+    @GET("/api/v1/destination/{id}")
+    suspend fun fetchDestination(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int
+    ): Response<Destination>
 }

@@ -44,7 +44,7 @@ import kotlinx.coroutines.withContext
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+class MainActivity : AppCompatActivity() {
 
     @NetworkModule.Main
     private val checkDatastoreViewModel: CheckDestinationViewModel by viewModels()
@@ -52,7 +52,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     @NetworkModule.Main
     private val saveDestinationViewModel: SaveDestinationViewModel by viewModels()
 
-    private var map: GoogleMap? = null
     private lateinit var splash: SplashScreen
     private lateinit var binding: ActivityMainBinding
     private val locationViewModel: LocationViewModel by viewModels()
@@ -68,10 +67,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         startSplash()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val mapFragment: SupportMapFragment? =
-            supportFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment?
-        mapFragment?.getMapAsync(this)
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -170,18 +165,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun onLocationChanged(location: Location) {
         mLastLocation = location
-
-        val seoul = LatLng(location.latitude, location.longitude)
-
-        val markerOptions = MarkerOptions()
-        markerOptions.position(seoul)
-        markerOptions.title("서울")
-        markerOptions.snippet("한국 수도")
-
-        map?.addMarker(markerOptions)
-
-        map?.moveCamera(CameraUpdateFactory.newLatLngZoom(seoul, 10f))
-
     }
 
 
@@ -209,10 +192,5 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 Toast.makeText(this, "권한이 없어 해당 기능을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
-    }
-
-    override fun onMapReady(googleMap: GoogleMap) {
-        map = googleMap
-        if (checkPermissionForLocation()) startLocationUpdate()
     }
 }
