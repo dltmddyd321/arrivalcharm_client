@@ -2,21 +2,14 @@ package com.example.arrivalcharm.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.R
-import com.example.arrivalcharm.api.ApiResult
-import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.ActivityHomeBinding
 import com.example.arrivalcharm.fragment.HomeFragment
 import com.example.arrivalcharm.fragment.MapFragment
 import com.example.arrivalcharm.fragment.SettingFragment
-import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {

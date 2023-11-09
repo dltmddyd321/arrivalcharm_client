@@ -67,65 +67,64 @@ class MainActivity : AppCompatActivity() {
         startSplash()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        checkPermissionForLocation()
 
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//        binding.goLoginBtn.setOnClickListener {
+//            lifecycleScope.launch {
+//                val location = com.example.arrivalcharm.datamodel.Location(
+//                    address = "경기도 광주시 중앙로 22번길 14-16 12791",
+//                    lat = "46.2344",
+//                    lon = "185.5434",
+//                    createdAt = System.currentTimeMillis(),
+//                    name = "HOME!",
+//                    number = 0
+//                )
+//
+//                val token = dataStoreViewModel.getAuthToken()
+//                saveDestinationViewModel.saveDestination(token, location).collect { result ->
+//                    when (result) {
+//                        is ApiResult.Success -> {
+//                            location.number = result.data?.id ?: 0
+//                            CoroutineScope(Dispatchers.IO).launch {
+//                                locationViewModel.insertLocation(location = location)
+//                            }
+//                        }
+//                        else -> {
+//
+//                        }
+//                    }
+//
+//                }
+//            }
+//        }
 
-        mLocationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        binding.goLoginBtn.setOnClickListener {
-            lifecycleScope.launch {
-                val location = com.example.arrivalcharm.datamodel.Location(
-                    address = "경기도 광주시 중앙로 22번길 14-16 12791",
-                    lat = "46.2344",
-                    lon = "185.5434",
-                    createdAt = System.currentTimeMillis(),
-                    name = "HOME!",
-                    number = 0
-                )
-
-                val token = dataStoreViewModel.getAuthToken()
-                saveDestinationViewModel.saveDestination(token, location).collect { result ->
-                    when (result) {
-                        is ApiResult.Success -> {
-                            location.number = result.data?.id ?: 0
-                            CoroutineScope(Dispatchers.IO).launch {
-                                locationViewModel.insertLocation(location = location)
-                            }
-                        }
-                        else -> {
-
-                        }
-                    }
-
-                }
-            }
-
-//            startActivity(Intent(this, LoginActivity::class.java))
-        }
-
-        binding.checkDB.setOnClickListener {
+//        binding.checkDB.setOnClickListener {
 //            lifecycleScope.launch {
 //                val list = locationViewModel.getAllLocation()
 //                withContext(Dispatchers.Main) {
 //                    Toast.makeText(this@MainActivity, "${list.size}", Toast.LENGTH_LONG).show()
 //                }
 //            }
+//        }
 
-            lifecycleScope.launch {
-                val token = dataStoreViewModel.getAuthToken()
-                checkDatastoreViewModel.getDestinationList(token).collect {
+//        binding.checkPrefs.setOnClickListener {
+//            lifecycleScope.launch {
+//                val token = dataStoreViewModel.getAuthToken()
+//                Toast.makeText(this@MainActivity, token, Toast.LENGTH_LONG).show()
+//            }
+//        }
+    }
 
-                }
-            }
+    private fun mainStart() {
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        mLocationRequest = LocationRequest.create().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
+        lifecycleScope.launch {
+            val token = dataStoreViewModel.getAuthToken()
+            if (token.length == "Bearer ".length) { //토큰이 없으면 로그인 필요
+            } else {
 
-        binding.checkPrefs.setOnClickListener {
-//            dataStoreViewModel.putAuthToken("fgjhbyfhauidw-r432adaAffggd430as")
-            lifecycleScope.launch {
-                val token = dataStoreViewModel.getAuthToken()
-                Toast.makeText(this@MainActivity, token, Toast.LENGTH_LONG).show()
             }
         }
     }
@@ -168,15 +167,13 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun checkPermissionForLocation(): Boolean {
-        return if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    private fun checkPermissionForLocation() {
+        if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
             && checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            true
-        } else {
-            // 권한이 없으므로 권한 요청 보내기
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_PERMISSION_LOCATION)
-            false
+            mainStart()
+            return
         }
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), REQUEST_PERMISSION_LOCATION)
     }
 
     override fun onRequestPermissionsResult(
@@ -192,5 +189,6 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this, "권한이 없어 해당 기능을 실행할 수 없습니다.", Toast.LENGTH_SHORT).show()
             }
         }
+        mainStart()
     }
 }

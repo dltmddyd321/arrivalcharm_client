@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.arrivalcharm.R
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.core.AppConst
@@ -14,7 +13,6 @@ import com.example.arrivalcharm.databinding.ActivityLoginBinding
 import com.example.arrivalcharm.datamodel.UserLoginInfo
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.type.LoginType
-import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.example.arrivalcharm.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
