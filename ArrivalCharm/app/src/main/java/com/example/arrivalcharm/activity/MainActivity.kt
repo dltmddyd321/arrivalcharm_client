@@ -121,10 +121,10 @@ class MainActivity : AppCompatActivity() {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
         lifecycleScope.launch {
-            val token = dataStoreViewModel.getAuthToken()
-            if (token.length == "Bearer ".length) { //토큰이 없으면 로그인 필요
+            if (dataStoreViewModel.isValidLogin()) {
+                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
             } else {
-
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
             }
         }
     }

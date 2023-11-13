@@ -13,6 +13,10 @@ class DatastoreViewModel @Inject constructor(
     private val datastoreRepo: DatastoreRepo
 ) : ViewModel() {
 
+    suspend fun isValidLogin(): Boolean = withContext(Dispatchers.IO) {
+        !datastoreRepo.getString("AUTH_TOKEN").isNullOrEmpty()
+    }
+
     fun putAuthToken(value: String) {
         CoroutineScope(Dispatchers.IO).launch {
             datastoreRepo.putString("AUTH_TOKEN", value)
