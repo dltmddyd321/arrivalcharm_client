@@ -20,6 +20,35 @@
             android:orientation="horizontal"
             android:visibility="visible">
 
+            <ImageView
+                android:id="@+id/profileImg"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="20dp"
+                android:src="@drawable/background_profile" />
+
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="유저 이름"
+                android:textSize="18dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/nameEditLy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
             <TextView
                 android:id="@+id/settingOne"
                 android:layout_width="wrap_content"
@@ -40,6 +69,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/initDestinationLy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -67,6 +97,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/alarmEditLy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

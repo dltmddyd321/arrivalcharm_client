@@ -42,5 +42,7 @@ class HomeFragment : Fragment() {
                 is ApiResult.Error -> return@onEach
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
+
+
     }
 }

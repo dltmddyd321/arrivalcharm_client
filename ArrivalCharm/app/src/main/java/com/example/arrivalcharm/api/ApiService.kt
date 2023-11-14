@@ -40,13 +40,20 @@ interface ApiService {
         @HeaderMap headers: HashMap<String, String>
     ): Response<Unit>
 
-    @Multipart
-    @PUT("/api/v1/users/{id}")
+    @PATCH("/api/v1/users/{id}")
     suspend fun editUserInfo(
         @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int,
+        @Query("displayUsername") displayUsername: String
+    ): Response<Unit>
+
+    @Multipart
+    @PATCH("/api/v1/users/{id}")
+    suspend fun editUserPhoto(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int,
         @Query("displayUsername") displayUsername: String,
-        @Part file : MultipartBody.Part,
-        @Path("id") id: Int
+        @Part file : MultipartBody.Part
     ): Response<Unit>
 
     @PUT("/api/v1/destination/{id}")

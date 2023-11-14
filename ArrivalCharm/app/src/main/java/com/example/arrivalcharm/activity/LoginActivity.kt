@@ -1,5 +1,6 @@
 package com.example.arrivalcharm.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -63,8 +64,10 @@ class LoginActivity : AppCompatActivity() {
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                                 val resultData = result.data
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                dataStoreViewModel.putAuthId(resultData.userId.toInt())
                                 val refreshToken = resultData.refreshToken
                                 val photo = resultData.photo
+                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,

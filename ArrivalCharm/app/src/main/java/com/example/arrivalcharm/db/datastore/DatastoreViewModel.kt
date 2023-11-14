@@ -23,8 +23,18 @@ class DatastoreViewModel @Inject constructor(
         }
     }
 
+    fun putAuthId(value: Int) {
+        CoroutineScope(Dispatchers.IO).launch {
+            datastoreRepo.putString("AUTH_ID", value.toString())
+        }
+    }
+
     suspend fun getAuthToken(): String = withContext(Dispatchers.IO) {
         ("Bearer " + datastoreRepo.getString("AUTH_TOKEN"))
+    }
+
+    suspend fun getAuthId(): Int = withContext(Dispatchers.IO) {
+        datastoreRepo.getString("AUTH_ID")?.toInt() ?: -1
     }
 
     fun putRefreshToken(value: String) {
