@@ -76,4 +76,14 @@ interface ApiService {
         @HeaderMap headers: HashMap<String, String>,
         @Path("id") id: Int
     ): Response<Destination>
+
+    @DELETE("/api/v1/destination")
+    suspend fun deleteAllDestination(
+        @HeaderMap headers: HashMap<String, String>
+    ): Response<Unit>
+
+    @DELETE("/api/v1/destination/recent")
+    suspend fun deleteAllRecent(
+        @HeaderMap headers: HashMap<String, String>
+    ): Response<Unit>
 }

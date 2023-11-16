@@ -15,7 +15,9 @@ import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentSettingBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
+import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
 import com.example.arrivalcharm.viewmodel.UserUpdateViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SettingFragment : Fragment() {
@@ -24,6 +26,9 @@ class SettingFragment : Fragment() {
 
     @NetworkModule.Main
     private val userEditViewModel: UserUpdateViewModel by activityViewModels()
+
+    @NetworkModule.Main
+    private val clearDestinationsViewModel: DestinationsClearViewModel by activityViewModels()
 
     private val dataStoreViewModel: DatastoreViewModel by activityViewModels()
 
@@ -53,6 +58,20 @@ class SettingFragment : Fragment() {
                         is ApiResult.Success -> {
                             Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
                             binding.settingOne.text = updateName
+                        }
+                        else -> return@collect
+                    }
+                }
+            }
+        }
+
+        binding.initDestinationLy.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val token = dataStoreViewModel.getAuthToken()
+                clearDestinationsViewModel.clearDestinationList(token).collect {
+                    when (it) {
+                        is ApiResult.Success -> {
+                            Toast.makeText(context, "초기화 완료.", Toast.LENGTH_SHORT).show()
                         }
                         else -> return@collect
                     }
