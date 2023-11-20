@@ -43,7 +43,5 @@ class DatastoreViewModel @Inject constructor(
         }
     }
 
-    suspend fun getRefreshToken(): String = withContext(Dispatchers.IO) {
-        datastoreRepo.getString("REFRESH_TOKEN") ?: ""
-    }
+    suspend fun getRefreshToken(): String = datastoreRepo.getString("REFRESH_TOKEN") ?: ""
 }
