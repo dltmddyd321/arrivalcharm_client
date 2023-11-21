@@ -15,6 +15,7 @@ import com.example.arrivalcharm.datamodel.UserLoginInfo
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.type.LoginType
 import com.example.arrivalcharm.viewmodel.LoginViewModel
+import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -29,6 +30,7 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import com.navercorp.nid.profile.NidProfileCallback
 import com.navercorp.nid.profile.data.NidProfileResponse
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -37,6 +39,9 @@ class LoginActivity : AppCompatActivity() {
 
     @NetworkModule.Main
     private val loginViewModel: LoginViewModel by viewModels()
+
+    @NetworkModule.Main
+    private val tokenRefreshViewModel: TokenRefreshViewModel by viewModels()
 
     private val dataStoreViewModel: DatastoreViewModel by viewModels()
 
@@ -174,8 +179,21 @@ class LoginActivity : AppCompatActivity() {
                     loginViewModel.startLogin(loginObject).collect { result ->
                         when (result) {
                             is ApiResult.Success -> {
-                                dataStoreViewModel.putAuthToken(result.data.accessToken)
-                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                val resultData = result.data
+                                dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                dataStoreViewModel.putAuthId(resultData.userId.toInt())
+//                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                                tokenRefreshViewModel.refreshToken(resultData.refreshToken, "Bearer ${resultData.accessToken}").collect {
+                                    when (it) {
+                                        is ApiResult.Success -> {
+                                            Toast.makeText(this@LoginActivity, "토큰 갱신 성공!", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else -> {
+
+                                        }
+                                    }
+                                }
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,

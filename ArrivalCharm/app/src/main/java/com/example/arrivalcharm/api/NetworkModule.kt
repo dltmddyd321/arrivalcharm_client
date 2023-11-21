@@ -32,7 +32,7 @@ object NetworkModule {
 
     @Named("mainBaseUrl")
     @Provides
-    fun provideBaseUrl() = "http://210.103.99.38:8080"
+    fun provideBaseUrl() = "http://121.165.115.41:8081"
     //121.165.115.41:8081 -> Sub Main
     //210.103.99.38:8080 -> Main
 
