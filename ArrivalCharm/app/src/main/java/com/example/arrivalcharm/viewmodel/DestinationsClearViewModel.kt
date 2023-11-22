@@ -15,11 +15,13 @@ class DestinationsClearViewModel @Inject constructor(
 ) : ViewModel() {
     fun clearDestinationList(header: String): Flow<ApiResult<Boolean>> = flow {
         try {
-            val field : HashMap<String, String> = HashMap()
+            val field: HashMap<String, String> = HashMap()
             field["Authorization"] = header
             val response = apiService.deleteAllDestination(field)
-            emit(if (response.isSuccessful) ApiResult.Success(true)
-                else ApiResult.Error("Failed!", response.code()))
+            emit(
+                if (response.isSuccessful) ApiResult.Success(true)
+                else ApiResult.Error("Failed!", response.code())
+            )
         } catch (e: Exception) {
             emit(ApiResult.Error(e.localizedMessage ?: "An error occurred", 0))
         }

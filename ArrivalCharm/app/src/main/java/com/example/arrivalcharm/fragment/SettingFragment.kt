@@ -6,18 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.arrivalcharm.R
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentSettingBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
+import com.example.arrivalcharm.viewmodel.ClearRecentViewModel
 import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
 import com.example.arrivalcharm.viewmodel.UserUpdateViewModel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SettingFragment : Fragment() {
@@ -29,6 +27,9 @@ class SettingFragment : Fragment() {
 
     @NetworkModule.Main
     private val clearDestinationsViewModel: DestinationsClearViewModel by activityViewModels()
+
+    @NetworkModule.Main
+    private val clearRecentViewModel: ClearRecentViewModel by activityViewModels()
 
     private val dataStoreViewModel: DatastoreViewModel by activityViewModels()
 
@@ -78,6 +79,19 @@ class SettingFragment : Fragment() {
                 }
             }
         }
-    }
 
+        binding.initRecentLy.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val token = dataStoreViewModel.getAuthToken()
+                clearRecentViewModel.clearRecentList(token).collect {
+                    when (it) {
+                        is ApiResult.Success -> {
+                            Toast.makeText(context, "초기화 완료.", Toast.LENGTH_SHORT).show()
+                        }
+                        else -> return@collect
+                    }
+                }
+            }
+        }
+    }
 }

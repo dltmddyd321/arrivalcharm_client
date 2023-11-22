@@ -4,24 +4,24 @@ import androidx.lifecycle.ViewModel
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.ApiService
 import com.example.arrivalcharm.api.NetworkModule
-import com.example.arrivalcharm.datamodel.RefreshTokenBody
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 @HiltViewModel
-class TokenRefreshViewModel @Inject constructor(
+class ClearRecentViewModel @Inject constructor(
     @NetworkModule.Main private val apiService: ApiService
 ) : ViewModel() {
-    fun refreshToken(header: String): Flow<ApiResult<Boolean>> = flow {
+    fun clearRecentList(header: String): Flow<ApiResult<Boolean>> = flow {
         try {
-            val response = apiService.tokenRefresh(header)
-            if (response.isSuccessful) {
-                emit(ApiResult.Success(true))
-            } else {
-                emit(ApiResult.Success(false))
-            }
+            val field: HashMap<String, String> = HashMap()
+            field["Authorization"] = header
+            val response = apiService.deleteAllRecent(field)
+            emit(
+                if (response.isSuccessful) ApiResult.Success(true)
+                else ApiResult.Error("Failed!", response.code())
+            )
         } catch (e: Exception) {
             emit(ApiResult.Error(e.localizedMessage ?: "An error occurred", 0))
         }

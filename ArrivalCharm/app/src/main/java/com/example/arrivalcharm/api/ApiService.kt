@@ -18,8 +18,8 @@ interface ApiService {
 
     @POST("/api/v1/auth/accessToken")
     suspend fun tokenRefresh(
-        @Body refreshToken: RefreshTokenBody
-    ): Response<Unit>
+        @Body refreshToken: String
+    ): Response<TokenRefreshResult>
 
     @GET("/api/v1/destination")
     suspend fun getDestinationList(
@@ -85,5 +85,11 @@ interface ApiService {
     @DELETE("/api/v1/destination/recent")
     suspend fun deleteAllRecent(
         @HeaderMap headers: HashMap<String, String>
+    ): Response<Unit>
+
+    @DELETE("/api/v1/users/{id}")
+    suspend fun deleteUser(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int
     ): Response<Unit>
 }

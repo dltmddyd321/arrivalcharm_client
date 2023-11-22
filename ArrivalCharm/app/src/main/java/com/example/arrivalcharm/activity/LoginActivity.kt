@@ -69,9 +69,8 @@ class LoginActivity : AppCompatActivity() {
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                                 val resultData = result.data
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
-                                val refreshToken = resultData.refreshToken
-                                val photo = resultData.photo
                                 startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                             }
                             is ApiResult.Error -> Toast.makeText(
@@ -124,7 +123,10 @@ class LoginActivity : AppCompatActivity() {
                         loginViewModel.startLogin(loginObject).collect { result ->
                             when (result) {
                                 is ApiResult.Success -> {
-                                    dataStoreViewModel.putAuthToken(result.data.accessToken)
+                                    val resultData = result.data
+                                    dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                    dataStoreViewModel.putRefreshToken(resultData.refreshToken)
+                                    dataStoreViewModel.putAuthId(resultData.userId.toInt())
                                     Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                                 }
                                 is ApiResult.Error -> Toast.makeText(
@@ -181,10 +183,11 @@ class LoginActivity : AppCompatActivity() {
                             is ApiResult.Success -> {
                                 val resultData = result.data
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
-//                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                                 startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                                tokenRefreshViewModel.refreshToken(resultData.refreshToken, "Bearer ${resultData.accessToken}").collect {
+                                tokenRefreshViewModel.refreshToken(resultData.refreshToken).collect {
                                     when (it) {
                                         is ApiResult.Success -> {
                                             Toast.makeText(this@LoginActivity, "토큰 갱신 성공!", Toast.LENGTH_SHORT).show()
