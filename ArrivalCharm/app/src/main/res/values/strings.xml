@@ -4,4 +4,5 @@
     <string name="hello_home">Hello HOME!!!!</string>
     <string name="hello_map">Hello MAP~~~~</string>
     <string name="hello_settings">Hello Settings:)</string>
+    <string name="title_activity_alarm_setting">AlarmSettingActivity</string>
 </resources>

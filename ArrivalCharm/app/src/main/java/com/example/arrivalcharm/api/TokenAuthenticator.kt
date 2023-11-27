@@ -21,20 +21,18 @@ class TokenAuthenticator @Inject constructor(
     override fun authenticate(route: Route?, response: Response): Request? {
         if (response.code != 500) return null
         val token = runBlocking { datastoreViewModel.getAuthToken() }
-//        val refreshResult = runBlocking {
-//            tokenRefreshViewModel.refreshToken(header = token).collect {
-//                when (it) {
-//                    is ApiResult.Success -> {
-//
-//                    }
-//                    else -> {
-//
-//                    }
-//                }
-//            }
-//        }
+        val refreshResult = runBlocking {
+            tokenRefreshViewModel.refreshToken(header = token).collect {
+                when (it) {
+                    is ApiResult.Success -> {
+
+                    }
+                    else -> ""
+                }
+            }
+        }
         return response.request.newBuilder()
-            .header("Authorization", "Bearer")
+            .header("Authorization", "Bearer ")
             .build()
     }
 }
