@@ -40,9 +40,6 @@ class LoginActivity : AppCompatActivity() {
     @NetworkModule.Main
     private val loginViewModel: LoginViewModel by viewModels()
 
-    @NetworkModule.Main
-    private val tokenRefreshViewModel: TokenRefreshViewModel by viewModels()
-
     private val dataStoreViewModel: DatastoreViewModel by viewModels()
 
     private lateinit var binding: ActivityLoginBinding
@@ -187,16 +184,6 @@ class LoginActivity : AppCompatActivity() {
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                                 startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-                                tokenRefreshViewModel.refreshToken(resultData.refreshToken).collect {
-                                    when (it) {
-                                        is ApiResult.Success -> {
-                                            Toast.makeText(this@LoginActivity, "토큰 갱신 성공!", Toast.LENGTH_SHORT).show()
-                                        }
-                                        else -> {
-
-                                        }
-                                    }
-                                }
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
