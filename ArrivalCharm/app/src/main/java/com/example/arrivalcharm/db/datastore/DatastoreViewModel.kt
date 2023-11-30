@@ -45,13 +45,13 @@ class DatastoreViewModel @Inject constructor(
 
     suspend fun getRefreshToken(): String = datastoreRepo.getString("REFRESH_TOKEN") ?: ""
 
-    fun putAlarmServiceDistance(distance: Int) {
+    fun putAlarmServiceDistance(distance: Int) { //단위: m
         CoroutineScope(Dispatchers.IO).launch {
             datastoreRepo.putString("Alarm_Distance", distance.toString())
         }
     }
 
-    suspend fun getAlarmServiceDistance(): Int = withContext(Dispatchers.IO) {
-        datastoreRepo.getString("Alarm_Distance")?.toInt() ?: -1
+    suspend fun getAlarmServiceDistance(): Int = withContext(Dispatchers.IO) { //단위: m
+        datastoreRepo.getString("Alarm_Distance")?.toInt() ?: 500
     }
 }
