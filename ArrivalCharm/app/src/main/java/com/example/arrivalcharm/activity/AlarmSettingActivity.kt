@@ -6,11 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.arrivalcharm.activity.ui.theme.ArrivalCharmTheme
@@ -79,6 +78,54 @@ fun AlertDialogShow() {
                         showDialog.value = false
                         // 취소 동작
                     }) {
+                    Text("취소")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun DistanceInputDialog(
+    showDialog: MutableState<Boolean>,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var text by remember { mutableStateOf(TextFieldValue()) }
+
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { onDismiss() },
+            title = { Text("알람 거리 수정") },
+            text = {
+                Column {
+                    Text("작업을 진행하시겠습니까?")
+                    TextField(
+                        value = text,
+                        onValueChange = {
+                            text = it
+                        },
+                        label = { Text("텍스트 입력") }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                        onConfirm(text.text)
+                    }
+                ) {
+                    Text("확인")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                        onDismiss()
+                    }
+                ) {
                     Text("취소")
                 }
             }

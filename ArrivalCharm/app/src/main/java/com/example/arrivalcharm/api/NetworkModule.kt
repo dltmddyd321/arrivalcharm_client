@@ -1,6 +1,8 @@
 package com.example.arrivalcharm.api
 
 import com.example.arrivalcharm.BuildConfig
+import com.example.arrivalcharm.db.datastore.DatastoreViewModel
+import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
@@ -40,9 +42,18 @@ object NetworkModule {
     @Provides
     fun adviceBaseUrl() = "https://api.adviceslip.com"
 
+    @Provides
+    @Singleton
+    fun provideTokenAuthenticator(
+        @Main tokenRefreshViewModel: TokenRefreshViewModel,
+        datastoreViewModel: DatastoreViewModel
+    ): TokenAuthenticator {
+        return TokenAuthenticator(tokenRefreshViewModel, datastoreViewModel)
+    }
+
     @Singleton
     @Provides
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(tokenAuthenticator: TokenAuthenticator): OkHttpClient {
         val connectionTimeOut = (1000 * 30).toLong()
         val readTimeOut = (1000 * 5).toLong()
 
@@ -75,7 +86,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .readTimeout(readTimeOut, TimeUnit.MILLISECONDS)
             .connectTimeout(connectionTimeOut, TimeUnit.MILLISECONDS)
-//            .authenticator(TokenAuthenticator)
+            .authenticator(tokenAuthenticator)
             .addInterceptor(interceptor)
             .build()
     }
