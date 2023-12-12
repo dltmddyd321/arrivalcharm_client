@@ -11,7 +11,7 @@ import com.example.arrivalcharm.util.Constants
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.Arrival_Datastore)
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = Constants.Arrival_Datastore)
 
 class DatastoreRepoImpl @Inject constructor(
     private val context: Context

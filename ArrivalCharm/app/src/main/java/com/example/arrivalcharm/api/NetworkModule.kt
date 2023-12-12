@@ -1,5 +1,6 @@
 package com.example.arrivalcharm.api
 
+import android.content.Context
 import com.example.arrivalcharm.BuildConfig
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
@@ -9,6 +10,7 @@ import com.google.gson.JsonSyntaxException
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -34,7 +36,7 @@ object NetworkModule {
 
     @Named("mainBaseUrl")
     @Provides
-    fun provideBaseUrl() = "http://121.165.115.41:8081"
+    fun provideBaseUrl() = "http://210.103.99.38:8080"
     //121.165.115.41:8081 -> Sub Main
     //210.103.99.38:8080 -> Main
 
@@ -42,13 +44,10 @@ object NetworkModule {
     @Provides
     fun adviceBaseUrl() = "https://api.adviceslip.com"
 
-    @Provides
     @Singleton
-    fun provideTokenAuthenticator(
-        @Main tokenRefreshViewModel: TokenRefreshViewModel,
-        datastoreViewModel: DatastoreViewModel
-    ): TokenAuthenticator {
-        return TokenAuthenticator(tokenRefreshViewModel, datastoreViewModel)
+    @Provides
+    fun provideTokenAuthenticator(@ApplicationContext context: Context): TokenAuthenticator {
+        return TokenAuthenticator(context)
     }
 
     @Singleton

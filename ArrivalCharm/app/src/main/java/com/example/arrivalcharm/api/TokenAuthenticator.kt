@@ -1,34 +1,86 @@
 package com.example.arrivalcharm.api
 
+import android.content.Context
+import androidx.activity.viewModels
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import com.example.arrivalcharm.datamodel.TokenRefreshResult
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
-import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
+import com.example.arrivalcharm.db.datastore.dataStore
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import okhttp3.Authenticator
-import okhttp3.Request
-import okhttp3.Response
-import okhttp3.Route
+import okhttp3.*
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.POST
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class TokenAuthenticator @Inject constructor(
-    @NetworkModule.Main private val tokenRefreshViewModel: TokenRefreshViewModel,
-    private val datastoreViewModel: DatastoreViewModel
-): Authenticator {
+    @ApplicationContext val context: Context
+) : Authenticator {
     override fun authenticate(route: Route?, response: Response): Request? {
         if (response.code != 500) return null
-        val token = runBlocking { datastoreViewModel.getAuthToken() }
-        val refreshResult = runBlocking {
-            tokenRefreshViewModel.refreshToken(header = token)
+
+        val refreshToken = runBlocking { getString("REFRESH_TOKEN") }
+        if (refreshToken.isNullOrEmpty()) return null
+
+        val refreshResult = getRefreshRetrofit<TokenRefreshApi>().getRefreshToken(refreshToken).execute()
+        refreshResult.body()?.let {
+            runBlocking {
+                putString("REFRESH_TOKEN", it.refreshToken)
+                putString("AUTH_TOKEN", it.accessToken)
+            }
+            return response.request.newBuilder()
+                .header("Authorization", "Bearer ${it.accessToken}")
+                .build()
         }
-        val newRefreshToken = refreshResult?.refreshToken
-        val newAccessToken = refreshResult?.accessToken
-        if (!newRefreshToken.isNullOrEmpty()) {
-            datastoreViewModel.putRefreshToken(newRefreshToken)
+        return null
+    }
+
+    private suspend fun getString(key: String): String? {
+        return try {
+            val prefsKey = stringPreferencesKey(key)
+            val prefs = context.dataStore.data.first()
+            prefs[prefsKey]
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-        if (!newAccessToken.isNullOrEmpty()) {
-            datastoreViewModel.putAuthToken(newAccessToken)
+    }
+
+    private suspend fun putString(key: String, value: String) {
+        val prefsKey = stringPreferencesKey(key)
+        context.dataStore.edit {
+            it[prefsKey] = value
         }
-        return response.request.newBuilder()
-            .header("Authorization", "Bearer $newAccessToken")
+    }
+
+    private val refreshClient = OkHttpClient.Builder()
+        .connectTimeout(120, TimeUnit.SECONDS)
+        .writeTimeout(120, TimeUnit.SECONDS)
+        .readTimeout(120, TimeUnit.SECONDS)
+        .addInterceptor(HttpLoggingInterceptor().apply {
+            this.level = HttpLoggingInterceptor.Level.BODY
+        })
+        .build()
+
+    private inline fun <reified T> getRefreshRetrofit(): T {
+        val retrofit = Retrofit.Builder()
+            .baseUrl("http://210.103.99.38:8080")
+            .client(refreshClient)
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
+        return retrofit.create(T::class.java)
+    }
+
+    interface TokenRefreshApi {
+        @POST("/api/v1/auth/accessToken")
+        fun getRefreshToken(
+            @Body refreshToken: String
+        ): retrofit2.Call<TokenRefreshResult>
     }
 }
