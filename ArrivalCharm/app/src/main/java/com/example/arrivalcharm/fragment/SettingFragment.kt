@@ -17,7 +17,9 @@ import com.example.arrivalcharm.databinding.FragmentSettingBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.viewmodel.ClearRecentViewModel
 import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
+import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
 import com.example.arrivalcharm.viewmodel.UserUpdateViewModel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SettingFragment : Fragment() {
@@ -26,6 +28,9 @@ class SettingFragment : Fragment() {
 
     @NetworkModule.Main
     private val userEditViewModel: UserUpdateViewModel by activityViewModels()
+
+    @NetworkModule.Main
+    private val tokenRefreshViewModel: TokenRefreshViewModel by activityViewModels()
 
     @NetworkModule.Main
     private val clearDestinationsViewModel: DestinationsClearViewModel by activityViewModels()
@@ -54,13 +59,29 @@ class SettingFragment : Fragment() {
         binding.nameEditLy.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 val token = dataStoreViewModel.getAuthToken()
+                val refreshToken = dataStoreViewModel.getRefreshToken()
                 val userId = dataStoreViewModel.getAuthId()
                 val updateName = "승용차"
                 userEditViewModel.updateUserName(token, userId, updateName).collect { result ->
                     when (result) {
                         is ApiResult.Success -> {
-                            Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                            binding.settingOne.text = updateName
+                            if (result.data.isSuccess) {
+                                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+                                binding.settingOne.text = updateName
+                            } else if (result.data.responseCode == 500) {
+                                tokenRefreshViewModel.refreshToken(refreshToken).collect {
+                                    when (it) {
+                                        is ApiResult.Success -> {
+                                            val newRefreshToken = it.data?.refreshToken
+                                            val newAccessToken = it.data?.accessToken
+                                            if (!newRefreshToken.isNullOrEmpty()) dataStoreViewModel.putRefreshToken(newRefreshToken)
+                                            if (!newAccessToken.isNullOrEmpty()) dataStoreViewModel.putAuthToken(newAccessToken)
+                                            userEditViewModel.updateUserName(dataStoreViewModel.getAuthToken(), userId, updateName).collect()
+                                        }
+                                        else -> {}
+                                    }
+                                }
+                            }
                         }
                         else -> return@collect
                     }

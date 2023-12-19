@@ -1,10 +1,13 @@
 package com.example.arrivalcharm.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.ApiService
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.datamodel.TokenRefreshResult
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
@@ -12,16 +15,16 @@ import javax.inject.Inject
 class TokenRefreshViewModel @Inject constructor(
     @NetworkModule.Main private val apiService: ApiService
 ) : ViewModel() {
-    fun refreshToken(header: String): TokenRefreshResult? = runBlocking {
+    fun refreshToken(header: String): Flow<ApiResult<TokenRefreshResult?>> = flow {
         try {
             val response = apiService.tokenRefresh(header)
             if (response.isSuccessful) {
-                response.body()
+                emit(ApiResult.Success(response.body()))
             } else {
-                null
+                emit(ApiResult.Error("An error occurred", response.code()))
             }
         } catch (e: Exception) {
-            null
+            emit(ApiResult.Error(e.localizedMessage ?: "An error occurred", 0))
         }
     }
 }
