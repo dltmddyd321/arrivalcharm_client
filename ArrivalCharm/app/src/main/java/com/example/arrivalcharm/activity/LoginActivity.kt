@@ -65,6 +65,7 @@ class LoginActivity : AppCompatActivity() {
                             is ApiResult.Success -> {
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
                                 val resultData = result.data
+                                dataStoreViewModel.putUserName(resultData.name)
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
                                 dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
@@ -121,6 +122,7 @@ class LoginActivity : AppCompatActivity() {
                             when (result) {
                                 is ApiResult.Success -> {
                                     val resultData = result.data
+                                    dataStoreViewModel.putUserName(resultData.name)
                                     dataStoreViewModel.putAuthToken(resultData.accessToken)
                                     dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                     dataStoreViewModel.putAuthId(resultData.userId.toInt())
@@ -179,6 +181,7 @@ class LoginActivity : AppCompatActivity() {
                         when (result) {
                             is ApiResult.Success -> {
                                 val resultData = result.data
+                                dataStoreViewModel.putUserName(resultData.name)
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
                                 dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())

@@ -15,12 +15,16 @@ import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentSettingBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
+import com.example.arrivalcharm.view.NameEditDialog
 import com.example.arrivalcharm.viewmodel.ClearRecentViewModel
 import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
 import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
 import com.example.arrivalcharm.viewmodel.UserUpdateViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
 
 class SettingFragment : Fragment() {
 
@@ -57,36 +61,34 @@ class SettingFragment : Fragment() {
             .into(binding.profileImg)
 
         binding.nameEditLy.setOnClickListener {
-            viewLifecycleOwner.lifecycleScope.launch {
-                val token = dataStoreViewModel.getAuthToken()
-                val refreshToken = dataStoreViewModel.getRefreshToken()
-                val userId = dataStoreViewModel.getAuthId()
-                val updateName = "승용차"
-                userEditViewModel.updateUserName(token, userId, updateName).collect { result ->
-                    when (result) {
-                        is ApiResult.Success -> {
-                            if (result.data.isSuccess) {
-                                Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
-                                binding.settingOne.text = updateName
-                            } else if (result.data.responseCode == 500) {
-                                tokenRefreshViewModel.refreshToken(refreshToken).collect {
-                                    when (it) {
-                                        is ApiResult.Success -> {
-                                            val newRefreshToken = it.data?.refreshToken
-                                            val newAccessToken = it.data?.accessToken
-                                            if (!newRefreshToken.isNullOrEmpty()) dataStoreViewModel.putRefreshToken(newRefreshToken)
-                                            if (!newAccessToken.isNullOrEmpty()) dataStoreViewModel.putAuthToken(newAccessToken)
-                                            userEditViewModel.updateUserName(dataStoreViewModel.getAuthToken(), userId, updateName).collect()
-                                        }
-                                        else -> {}
-                                    }
+            val dialog = NameEditDialog(requireContext(), "이름 변경", { newName ->
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val token = dataStoreViewModel.getAuthToken()
+                    val refreshToken = dataStoreViewModel.getRefreshToken()
+                    val userId = dataStoreViewModel.getAuthId()
+                    userEditViewModel.updateUserName(token, userId, newName).collect { result ->
+                        when (result) {
+                            is ApiResult.Success -> {
+                                if (result.data.isSuccess) {
+                                    Toast.makeText(
+                                        context,
+                                        "저장되었습니다. ${result.data.responseCode}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    binding.settingOne.text = newName
+                                }
+                                if (result.data.responseCode == 500) {
+                                    refreshToken(refreshToken, userId, newName)
                                 }
                             }
+                            else -> return@collect
                         }
-                        else -> return@collect
                     }
                 }
-            }
+            }, {
+                Toast.makeText(context, "변경이 취소되었습니다.", Toast.LENGTH_SHORT).show()
+            })
+            dialog.show()
         }
 
         binding.initDestinationLy.setOnClickListener {
@@ -119,6 +121,33 @@ class SettingFragment : Fragment() {
 
         binding.alarmEditLy.setOnClickListener {
             startActivity(Intent(requireContext(), AlarmSettingActivity::class.java))
+        }
+
+        lifecycleScope.launch {
+            binding.userName.text = dataStoreViewModel.getUserName()
+        }
+    }
+
+    private suspend fun refreshToken(refreshToken: String, userId: Int, updateName: String) {
+        tokenRefreshViewModel.refreshToken(refreshToken).collect {
+            when (it) {
+                is ApiResult.Success -> {
+                    val newRefreshToken = it.data?.refreshToken
+                    val newAccessToken = it.data?.accessToken
+                    if (!newRefreshToken.isNullOrEmpty()) dataStoreViewModel.putRefreshToken(
+                        newRefreshToken
+                    )
+                    if (!newAccessToken.isNullOrEmpty()) dataStoreViewModel.putAuthToken(
+                        newAccessToken
+                    )
+                    userEditViewModel.updateUserName(
+                        dataStoreViewModel.getAuthToken(),
+                        userId,
+                        updateName
+                    ).collect()
+                }
+                else -> {}
+            }
         }
     }
 }

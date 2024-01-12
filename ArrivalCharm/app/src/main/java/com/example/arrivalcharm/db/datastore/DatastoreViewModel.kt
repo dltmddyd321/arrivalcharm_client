@@ -54,4 +54,14 @@ class DatastoreViewModel @Inject constructor(
     suspend fun getAlarmServiceDistance(): Int = withContext(Dispatchers.IO) { //단위: m
         datastoreRepo.getString("Alarm_Distance")?.toInt() ?: 500
     }
+
+    fun putUserName(name: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            datastoreRepo.putString("Name", name)
+        }
+    }
+
+    suspend fun getUserName(): String = withContext(Dispatchers.IO) {
+        datastoreRepo.getString("Name") ?: "이름을 설정해주세요."
+    }
 }
