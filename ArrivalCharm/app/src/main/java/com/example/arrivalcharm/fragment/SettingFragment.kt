@@ -1,12 +1,20 @@
 package com.example.arrivalcharm.fragment
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -20,15 +28,13 @@ import com.example.arrivalcharm.viewmodel.ClearRecentViewModel
 import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
 import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
 import com.example.arrivalcharm.viewmodel.UserUpdateViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
 
 class SettingFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingBinding
+    private var imageUri: Uri? = null
 
     @NetworkModule.Main
     private val userEditViewModel: UserUpdateViewModel by activityViewModels()
@@ -44,6 +50,29 @@ class SettingFragment : Fragment() {
 
     private val dataStoreViewModel: DatastoreViewModel by activityViewModels()
 
+    private fun openGallery() {
+        val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+        pickImageLauncher.launch(gallery)
+    }
+
+    private val requestPermissionLauncher: ActivityResultLauncher<String> =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                openGallery()
+            }
+        }
+
+    private val pickImageLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val data: Intent? = result.data
+                data?.data?.let {
+                    imageUri = it
+                    binding.profileImg.setImageURI(imageUri)
+                }
+            }
+        }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,6 +83,16 @@ class SettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.profileImg.clipToOutline = true
+
+        binding.profileEditLy.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                openGallery()
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
 
         val imageUrl = "http://210.103.99.38:8080/image/default/profile.jpg"
         Glide.with(this)

@@ -41,6 +41,34 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/profileEditLy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+            <TextView
+                android:id="@+id/profileEditTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_weight="1"
+                android:text="이름 변경"
+                android:textSize="18dp" />
+
+            <ImageView
+                android:id="@+id/profileEditBtn"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginRight="30dp"
+                android:padding="10dp"
+                android:src="@drawable/baseline_arrow_forward_ios_24" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/nameEditLy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
