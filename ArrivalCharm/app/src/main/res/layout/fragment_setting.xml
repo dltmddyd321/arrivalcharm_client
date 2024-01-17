@@ -36,6 +36,7 @@
                 android:layout_weight="1"
                 android:maxLines="1"
                 android:text="유저 이름"
+                android:textColor="@color/black"
                 android:textSize="18dp" />
 
         </LinearLayout>
@@ -55,7 +56,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1"
-                android:text="이름 변경"
+                android:text="사진 변경"
+                android:textColor="@color/black"
                 android:textSize="18dp" />
 
             <ImageView
@@ -84,6 +86,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1"
                 android:text="이름 변경"
+                android:textColor="@color/black"
                 android:textSize="18dp" />
 
             <ImageView
@@ -112,6 +115,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1"
                 android:text="즐겨찾기 초기화"
+                android:textColor="@color/black"
                 android:textSize="18dp" />
 
             <ImageView
@@ -139,6 +143,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1"
                 android:text="최근 검색 초기화"
+                android:textColor="@color/black"
                 android:textSize="18dp" />
 
             <ImageView
@@ -166,6 +171,7 @@
                 android:layout_marginLeft="30dp"
                 android:layout_weight="1"
                 android:text="알람 설정"
+                android:textColor="@color/black"
                 android:textSize="18dp" />
 
             <ImageView

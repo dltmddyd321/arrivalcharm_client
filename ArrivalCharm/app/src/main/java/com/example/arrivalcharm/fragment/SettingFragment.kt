@@ -23,6 +23,7 @@ import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentSettingBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
+import com.example.arrivalcharm.util.FileConverter
 import com.example.arrivalcharm.view.NameEditDialog
 import com.example.arrivalcharm.viewmodel.ClearRecentViewModel
 import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
@@ -66,9 +67,28 @@ class SettingFragment : Fragment() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == RESULT_OK) {
                 val data: Intent? = result.data
-                data?.data?.let {
-                    imageUri = it
-                    binding.profileImg.setImageURI(imageUri)
+                data?.data?.let { uri ->
+                    imageUri = uri
+                    val imageFile = FileConverter.uriToFile(requireContext(), uri) ?: return@let
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        val token = dataStoreViewModel.getAuthToken()
+                        val userId = dataStoreViewModel.getAuthId()
+                        userEditViewModel.updateUserProfileImg(token, userId = userId, imageFile).collect { result ->
+                            when (result) {
+                                is ApiResult.Success -> {
+                                    if (result.data.isSuccess) {
+                                        Toast.makeText(
+                                            context,
+                                            "저장되었습니다. ${result.data.responseCode}",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        binding.profileImg.setImageURI(imageUri)
+                                    }
+                                }
+                                else -> return@collect
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -114,7 +134,7 @@ class SettingFragment : Fragment() {
                                         "저장되었습니다. ${result.data.responseCode}",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    binding.settingOne.text = newName
+                                    binding.userName.text = newName
                                 }
                                 if (result.data.responseCode == 500) {
                                     refreshToken(refreshToken, userId, newName)

@@ -49,6 +49,14 @@ interface ApiService {
 
     @Multipart
     @PATCH("/api/v1/users/{id}")
+    suspend fun editUserImage(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int,
+        @Part file: MultipartBody.Part
+    ): Response<Unit>
+
+    @Multipart
+    @PATCH("/api/v1/users/{id}")
     suspend fun editUserPhoto(
         @HeaderMap headers: HashMap<String, String>,
         @Path("id") id: Int,
