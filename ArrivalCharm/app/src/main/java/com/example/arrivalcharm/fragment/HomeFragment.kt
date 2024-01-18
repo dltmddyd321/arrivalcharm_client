@@ -1,5 +1,6 @@
 package com.example.arrivalcharm.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.arrivalcharm.activity.PagingTestActivity
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentHomeBinding
@@ -65,6 +67,10 @@ class HomeFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        binding.testBtn.setOnClickListener {
+            startActivity(Intent(requireActivity(), PagingTestActivity::class.java))
         }
     }
 }

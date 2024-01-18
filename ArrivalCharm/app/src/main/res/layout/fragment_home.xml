@@ -65,12 +65,13 @@
                 android:text="집" />
 
             <Button
+                android:id="@+id/testBtn"
                 android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_margin="30dp"
                 android:layout_weight="1"
                 android:background="@drawable/background_btn"
-                android:text="회사" />
+                android:text="테스트!!" />
 
         </LinearLayout>
 
