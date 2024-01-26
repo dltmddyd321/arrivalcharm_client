@@ -8,6 +8,7 @@ import com.example.arrivalcharm.databinding.ActivityHomeBinding
 import com.example.arrivalcharm.fragment.HomeFragment
 import com.example.arrivalcharm.fragment.MapFragment
 import com.example.arrivalcharm.fragment.SettingFragment
+import com.example.arrivalcharm.util.DistanceManager
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -24,8 +25,11 @@ class HomeActivity : AppCompatActivity() {
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val lat = intent?.getDoubleExtra("lat", 0.0) ?: DistanceManager.DefaultLat
+        val lng = intent?.getDoubleExtra("lng", 0.0) ?: DistanceManager.DefaultLng
+
         homeFragment = HomeFragment()
-        mapFragment = MapFragment()
+        mapFragment = MapFragment.newInstance(lat, lng)
         settingFragment = SettingFragment()
 
         supportFragmentManager.beginTransaction().add(R.id.tabFrame, homeFragment).commit()

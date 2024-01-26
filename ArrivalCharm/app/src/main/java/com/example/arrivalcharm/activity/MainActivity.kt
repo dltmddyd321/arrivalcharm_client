@@ -9,6 +9,7 @@ import android.location.Address
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.animation.AnticipateInterpolator
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -32,7 +33,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var splash: SplashScreen
     private lateinit var binding: ActivityMainBinding
-    private val dataStoreViewModel: DatastoreViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +43,20 @@ class MainActivity : AppCompatActivity() {
         checkPermissionForLocation()
     }
 
-    private fun mainStart() {
+    private fun mainStart(lat: Double, lng: Double) {
         lifecycleScope.launch {
-            if (dataStoreViewModel.isValidLogin()) {
-                startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-            } else {
-                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-            }
+//            if (dataStoreViewModel.isValidLogin()) {
+//                val intent = Intent(this@MainActivity, HomeActivity::class.java)
+//                intent.putExtra("lat", lat)
+//                intent.putExtra("lng", lng)
+//                startActivity(intent)
+//            } else {
+//                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+//            }
+            val intent = Intent(this@MainActivity, HomeActivity::class.java)
+            intent.putExtra("lat", lat)
+            intent.putExtra("lng", lng)
+            startActivity(intent)
         }
     }
 
@@ -77,15 +84,20 @@ class MainActivity : AppCompatActivity() {
         val fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         fusedLocationProviderClient.lastLocation
             .addOnSuccessListener {
-                val address = getAddress(it.latitude, it.longitude)
-                if (address.isNotEmpty()) {
-                    Toast.makeText(
-                        this,
-                        "lat : ${address.first().adminArea} / log : ${address.first().locality}",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                if (it == null) {
+                    Toast.makeText(this, "위치 정보 가져오기 실패", Toast.LENGTH_SHORT).show()
+                    return@addOnSuccessListener
                 }
-                mainStart()
+                mainStart(it.latitude, it.longitude)
+//                val address = getAddress()
+//                if (address.isNotEmpty()) {
+//                    val mainAddress = address.first()
+////                    Toast.makeText(
+////                        this,
+////                        "lat : ${address.first().adminArea} / log : ${address.first().locality} / ${mainAddress.thoroughfare} / ${mainAddress.featureName}",
+////                        Toast.LENGTH_SHORT
+//
+//                }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "위치 정보 가져오기 실패", Toast.LENGTH_SHORT).show()
