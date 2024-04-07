@@ -14,6 +14,7 @@ import com.example.arrivalcharm.databinding.ActivityLoginBinding
 import com.example.arrivalcharm.datamodel.UserLoginInfo
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.type.LoginType
+import com.example.arrivalcharm.util.DistanceManager
 import com.example.arrivalcharm.viewmodel.LoginViewModel
 import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -69,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
                                 dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
-                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                                startHomeActivity()
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
@@ -127,6 +128,7 @@ class LoginActivity : AppCompatActivity() {
                                     dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                     dataStoreViewModel.putAuthId(resultData.userId.toInt())
                                     Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                    startHomeActivity()
                                 }
                                 is ApiResult.Error -> Toast.makeText(
                                     this@LoginActivity,
@@ -186,7 +188,7 @@ class LoginActivity : AppCompatActivity() {
                                 dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
                                 Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
-                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                                startHomeActivity()
                             }
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
@@ -203,7 +205,7 @@ class LoginActivity : AppCompatActivity() {
                 val errorDescription = NaverIdLoginSDK.getLastErrorDescription()
                 Timber.tag("네이버 로그인").i(
                     "errorCode: ${errorCode}\n" +
-                            "errorDescription: ${errorDescription}"
+                            "errorDescription: $errorDescription"
                 )
                 Toast.makeText(
                     this@LoginActivity, "errorCode: ${errorCode}\n" +
@@ -252,5 +254,16 @@ class LoginActivity : AppCompatActivity() {
         googleSignInClient.signOut()
         val signInIntent = googleSignInClient.signInIntent
         googleAuthLauncher.launch(signInIntent)
+    }
+
+    private fun startHomeActivity() {
+        val lat = intent?.getDoubleExtra("lat", 0.0) ?: DistanceManager.DefaultLat
+        val lng = intent?.getDoubleExtra("lng", 0.0) ?: DistanceManager.DefaultLng
+        val address = intent?.getStringExtra("address") ?: ""
+        val intent = Intent(this@LoginActivity, HomeActivity::class.java)
+        intent.putExtra("lat", lat)
+        intent.putExtra("lng", lng)
+        intent.putExtra("address", address)
+        startActivity(intent)
     }
 }

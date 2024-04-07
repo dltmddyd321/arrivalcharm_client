@@ -34,6 +34,16 @@ class HomeFragment : Fragment() {
     @NetworkModule.Main
     private val fetchRecentViewModel: FetchRecentViewModel by activityViewModels()
 
+    companion object {
+        fun newInstance(address: String): HomeFragment {
+            val fragment = HomeFragment()
+            val args = Bundle()
+            args.putString("address", address)
+            fragment.arguments = args
+            return fragment
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,6 +61,7 @@ class HomeFragment : Fragment() {
                     val advice = result.data
                     binding.wiseText.text = advice
                 }
+
                 is ApiResult.Error -> return@onEach
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
@@ -72,5 +83,14 @@ class HomeFragment : Fragment() {
         binding.testBtn.setOnClickListener {
             startActivity(Intent(requireActivity(), PagingTestActivity::class.java))
         }
+
+        setCurrentPositionText()
+    }
+
+    private fun setCurrentPositionText() = with(binding) {
+        val current = arguments?.getString("address")
+        if (current.isNullOrEmpty()) return@with
+        currentLayout.visibility = View.VISIBLE
+        currentPosText.text = current
     }
 }

@@ -18,6 +18,7 @@ import androidx.core.animation.doOnEnd
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.arrivalcharm.databinding.ActivityMainBinding
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var splash: SplashScreen
     private lateinit var binding: ActivityMainBinding
+    private val dataStoreViewModel: DatastoreViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,19 +45,16 @@ class MainActivity : AppCompatActivity() {
         checkPermissionForLocation()
     }
 
-    private fun mainStart(lat: Double, lng: Double) {
+    private fun mainStart(lat: Double, lng: Double, address: String) {
         lifecycleScope.launch {
-//            if (dataStoreViewModel.isValidLogin()) {
-//                val intent = Intent(this@MainActivity, HomeActivity::class.java)
-//                intent.putExtra("lat", lat)
-//                intent.putExtra("lng", lng)
-//                startActivity(intent)
-//            } else {
-//                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-//            }
-            val intent = Intent(this@MainActivity, HomeActivity::class.java)
+            val intent = if (dataStoreViewModel.isValidLogin()) {
+                Intent(this@MainActivity, HomeActivity::class.java)
+            } else {
+                Intent(this@MainActivity, LoginActivity::class.java)
+            }
             intent.putExtra("lat", lat)
             intent.putExtra("lng", lng)
+            intent.putExtra("address", address)
             startActivity(intent)
         }
     }
@@ -88,16 +87,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "위치 정보 가져오기 실패", Toast.LENGTH_SHORT).show()
                     return@addOnSuccessListener
                 }
-                mainStart(it.latitude, it.longitude)
-//                val address = getAddress()
-//                if (address.isNotEmpty()) {
-//                    val mainAddress = address.first()
-////                    Toast.makeText(
-////                        this,
-////                        "lat : ${address.first().adminArea} / log : ${address.first().locality} / ${mainAddress.thoroughfare} / ${mainAddress.featureName}",
-////                        Toast.LENGTH_SHORT
-//
-//                }
+                val address = getAddress(it.latitude, it.longitude)
+                if (address.isEmpty()) return@addOnSuccessListener
+                val mainAddress = address.first()
+                val addressText = "${mainAddress.adminArea} - ${mainAddress.locality} " +
+                        "- ${mainAddress.thoroughfare} - ${mainAddress.featureName}"
+                mainStart(it.latitude, it.longitude, addressText)
             }
             .addOnFailureListener {
                 Toast.makeText(this, "위치 정보 가져오기 실패", Toast.LENGTH_SHORT).show()
