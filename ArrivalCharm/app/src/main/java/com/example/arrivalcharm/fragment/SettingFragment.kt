@@ -5,6 +5,7 @@ import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
 import androidx.fragment.app.Fragment
@@ -18,6 +19,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.example.arrivalcharm.R
 import com.example.arrivalcharm.activity.AlarmSettingActivity
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
@@ -73,21 +76,23 @@ class SettingFragment : Fragment() {
                     viewLifecycleOwner.lifecycleScope.launch {
                         val token = dataStoreViewModel.getAuthToken()
                         val userId = dataStoreViewModel.getAuthId()
-                        userEditViewModel.updateUserProfileImg(token, userId = userId, imageFile).collect { result ->
-                            when (result) {
-                                is ApiResult.Success -> {
-                                    if (result.data.isSuccess) {
-                                        Toast.makeText(
-                                            context,
-                                            "저장되었습니다. ${result.data.responseCode}",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                        binding.profileImg.setImageURI(imageUri)
+                        userEditViewModel.updateUserProfileImg(token, userId = userId, imageFile)
+                            .collect { result ->
+                                when (result) {
+                                    is ApiResult.Success -> {
+                                        if (result.data.isSuccess) {
+                                            Toast.makeText(
+                                                context,
+                                                "저장되었습니다. ${result.data.responseCode}",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                            binding.profileImg.setImageURI(imageUri)
+                                        }
                                     }
+
+                                    else -> return@collect
                                 }
-                                else -> return@collect
                             }
-                        }
                     }
                 }
             }
@@ -107,16 +112,30 @@ class SettingFragment : Fragment() {
         binding.profileImg.clipToOutline = true
 
         binding.profileEditLy.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                Manifest.permission.READ_MEDIA_IMAGES
+            } else {
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            }
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(), permission
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
                 openGallery()
             } else {
-                requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_MEDIA_IMAGES)
+                } else {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                }
             }
         }
 
         val imageUrl = "http://210.103.99.38:8080/image/default/profile.jpg"
         Glide.with(this)
             .load(imageUrl)
+            .error(R.drawable.baseline_error_24)
+            .transform(CircleCrop())
             .into(binding.profileImg)
 
         binding.nameEditLy.setOnClickListener {
@@ -140,6 +159,7 @@ class SettingFragment : Fragment() {
                                     refreshToken(refreshToken, userId, newName)
                                 }
                             }
+
                             else -> return@collect
                         }
                     }
@@ -158,6 +178,7 @@ class SettingFragment : Fragment() {
                         is ApiResult.Success -> {
                             Toast.makeText(context, "초기화 완료.", Toast.LENGTH_SHORT).show()
                         }
+
                         else -> return@collect
                     }
                 }
@@ -172,6 +193,7 @@ class SettingFragment : Fragment() {
                         is ApiResult.Success -> {
                             Toast.makeText(context, "초기화 완료.", Toast.LENGTH_SHORT).show()
                         }
+
                         else -> return@collect
                     }
                 }
@@ -205,6 +227,7 @@ class SettingFragment : Fragment() {
                         updateName
                     ).collect()
                 }
+
                 else -> {}
             }
         }
