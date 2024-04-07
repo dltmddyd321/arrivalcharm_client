@@ -31,6 +31,7 @@ import com.example.arrivalcharm.view.NameEditDialog
 import com.example.arrivalcharm.viewmodel.ClearRecentViewModel
 import com.example.arrivalcharm.viewmodel.DestinationsClearViewModel
 import com.example.arrivalcharm.viewmodel.TokenRefreshViewModel
+import com.example.arrivalcharm.viewmodel.UserFetchViewModel
 import com.example.arrivalcharm.viewmodel.UserUpdateViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -39,6 +40,9 @@ class SettingFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingBinding
     private var imageUri: Uri? = null
+
+    @NetworkModule.Main
+    private val userFetchViewModel: UserFetchViewModel by activityViewModels()
 
     @NetworkModule.Main
     private val userEditViewModel: UserUpdateViewModel by activityViewModels()
@@ -108,6 +112,8 @@ class SettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        checkUserData()
 
         binding.profileImg.clipToOutline = true
 
@@ -229,6 +235,22 @@ class SettingFragment : Fragment() {
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    private fun checkUserData() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val token = dataStoreViewModel.getAuthToken()
+            val userId = dataStoreViewModel.getAuthId()
+            userFetchViewModel.fetchUserData(token, userId).collect {
+                when (it) {
+                    is ApiResult.Success -> {
+                        Toast.makeText(context, "유저 정보 확인 성공", Toast.LENGTH_SHORT).show()
+                    }
+
+                    else -> return@collect
+                }
             }
         }
     }

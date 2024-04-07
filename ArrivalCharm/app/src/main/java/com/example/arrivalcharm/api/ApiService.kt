@@ -100,4 +100,10 @@ interface ApiService {
         @HeaderMap headers: HashMap<String, String>,
         @Path("id") id: Int
     ): Response<Unit>
+
+    @GET("/api/v1/users/{id}")
+    suspend fun fetchUser(
+        @HeaderMap headers: HashMap<String, String>,
+        @Path("id") id: Int
+    ): Response<UserCheckData>
 }
