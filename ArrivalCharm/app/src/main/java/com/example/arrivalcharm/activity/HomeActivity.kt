@@ -2,6 +2,8 @@ package com.example.arrivalcharm.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import com.example.arrivalcharm.R
 import com.example.arrivalcharm.databinding.ActivityHomeBinding
@@ -15,6 +17,21 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class HomeActivity : AppCompatActivity() {
 
+    private val callback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            if (backPressedTime + 2000 > System.currentTimeMillis()) {
+                backToast.cancel()
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
+            } else {
+                backToast.show()
+                backPressedTime = System.currentTimeMillis()
+            }
+        }
+    }
+
+    private var backPressedTime: Long = 0
+    private lateinit var backToast: Toast
     private lateinit var binding: ActivityHomeBinding
     private lateinit var homeFragment: HomeFragment
     private lateinit var mapFragment: MapFragment
@@ -24,6 +41,8 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        backToast = Toast.makeText(this, "한 번 더 뒤로가기 하시면 종료됩니다.", Toast.LENGTH_SHORT)
 
         val lat = intent?.getDoubleExtra("lat", 0.0) ?: DistanceManager.DefaultLat
         val lng = intent?.getDoubleExtra("lng", 0.0) ?: DistanceManager.DefaultLng
@@ -49,10 +68,16 @@ class HomeActivity : AppCompatActivity() {
             override fun onTabReselected(tab: TabLayout.Tab) {}
 
         })
+        onBackPressedDispatcher.addCallback(this, callback)
     }
 
     private fun replaceTabView(selectedTab: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.tabFrame, selectedTab).commit()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        backToast.cancel()
     }
 }

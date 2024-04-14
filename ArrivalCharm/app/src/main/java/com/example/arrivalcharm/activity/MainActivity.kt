@@ -47,7 +47,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun mainStart(lat: Double, lng: Double, address: String) {
         lifecycleScope.launch {
-            val intent = if (dataStoreViewModel.isValidLogin()) {
+            val isConnected = dataStoreViewModel.isValidLogin()
+            val intent = if (isConnected) {
                 Intent(this@MainActivity, HomeActivity::class.java)
             } else {
                 Intent(this@MainActivity, LoginActivity::class.java)
@@ -55,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             intent.putExtra("lat", lat)
             intent.putExtra("lng", lng)
             intent.putExtra("address", address)
+            if (isConnected) intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
     }
