@@ -58,28 +58,13 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/horizontal_recyclerview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_margin="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/background_btn"
-                android:text="집" />
-
-            <Button
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_margin="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/background_btn"
-                android:text="회사" />
-
-        </LinearLayout>
+            android:orientation="horizontal"
+            android:padding="16dp"
+            tools:listitem="@layout/item_horizontal_location" />
 
         <LinearLayout
             android:layout_width="match_parent"

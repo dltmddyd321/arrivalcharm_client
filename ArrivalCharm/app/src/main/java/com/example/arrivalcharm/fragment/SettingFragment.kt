@@ -137,13 +137,6 @@ class SettingFragment : Fragment() {
             }
         }
 
-        val imageUrl = "http://210.103.99.38:8080/image/default/profile.jpg"
-        Glide.with(this)
-            .load(imageUrl)
-            .error(R.drawable.baseline_error_24)
-            .transform(CircleCrop())
-            .into(binding.profileImg)
-
         binding.nameEditLy.setOnClickListener {
             val dialog = NameEditDialog(requireContext(), "이름 변경", { newName ->
                 viewLifecycleOwner.lifecycleScope.launch {
@@ -246,10 +239,21 @@ class SettingFragment : Fragment() {
             userFetchViewModel.fetchUserData(token, userId).collect {
                 when (it) {
                     is ApiResult.Success -> {
-                        Toast.makeText(context, "유저 정보 확인 성공", Toast.LENGTH_SHORT).show()
+                        val profileImg = it.data.user.profilePath
+                        Glide.with(this@SettingFragment)
+                            .load("http://121.165.115.41:8081${profileImg}")
+                            .error(R.drawable.baseline_error_24)
+                            .transform(CircleCrop())
+                            .into(binding.profileImg)
                     }
-
-                    else -> return@collect
+                    else -> {
+                        val imageUrl = "http://210.103.99.38:8080/image/default/profile.jpg"
+                        Glide.with(this@SettingFragment)
+                            .load(imageUrl)
+                            .error(R.drawable.baseline_error_24)
+                            .transform(CircleCrop())
+                            .into(binding.profileImg)
+                    }
                 }
             }
         }
