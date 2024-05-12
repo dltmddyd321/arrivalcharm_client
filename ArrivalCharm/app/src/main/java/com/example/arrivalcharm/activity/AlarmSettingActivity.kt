@@ -45,7 +45,7 @@ class AlarmSettingActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = Color.White
                 ) {
-                    Greeting()
+                    Greeting(dataStoreViewModel)
                 }
             }
         }
@@ -53,7 +53,7 @@ class AlarmSettingActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting() {
+fun Greeting(datastoreViewModel: DatastoreViewModel) {
 
     var alarmDistanceText by remember {
         mutableStateOf("2")
@@ -68,6 +68,8 @@ fun Greeting() {
         Spacer(modifier = Modifier.size(10.dp))
         AlertDialogShow {
             alarmDistanceText = it
+            val value = alarmDistanceText.toIntOrNull() ?: return@AlertDialogShow
+            datastoreViewModel.putAlarmServiceDistance(value)
         }
     }
 }
@@ -165,9 +167,7 @@ private fun isConvertibleToInt(text: String): Boolean {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    ArrivalCharmTheme {
-        Greeting()
-    }
+    ArrivalCharmTheme {}
 }
 
 @Composable
