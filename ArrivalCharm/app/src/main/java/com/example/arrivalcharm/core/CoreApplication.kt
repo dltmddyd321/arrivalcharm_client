@@ -4,13 +4,16 @@ import android.app.Activity
 import android.app.Application
 import android.os.Bundle
 import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
 import com.kakao.sdk.common.KakaoSdk
 import com.navercorp.nid.NaverIdLoginSDK
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
+import javax.inject.Inject
 
 @HiltAndroidApp
-class CoreApplication : Application() {
+class CoreApplication : Application(), Configuration.Provider {
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, "dd2a2a9fa7c29f1a6da2e928efbaee85")
@@ -22,6 +25,13 @@ class CoreApplication : Application() {
         )
         registerActivityLifecycleCallbacks(AppLifecycleCallbacks())
     }
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration = Configuration.Builder()
+        .setWorkerFactory(workerFactory)
+        .build()
 
     private inner class AppLifecycleCallbacks : ActivityLifecycleCallbacks {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

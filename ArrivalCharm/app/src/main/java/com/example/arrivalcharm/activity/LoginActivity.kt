@@ -64,7 +64,8 @@ class LoginActivity : AppCompatActivity() {
                     loginViewModel.startLogin(loginObject).collect { result ->
                         when (result) {
                             is ApiResult.Success -> {
-                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT)
+                                    .show()
                                 val resultData = result.data
                                 dataStoreViewModel.putUserName(resultData.name)
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
@@ -72,6 +73,7 @@ class LoginActivity : AppCompatActivity() {
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
                                 startHomeActivity()
                             }
+
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
                                 result.message,
@@ -111,7 +113,11 @@ class LoginActivity : AppCompatActivity() {
             } else if (token != null) {
                 UserApiClient.instance.me { user, err ->
                     if (err != null) return@me
-                    Toast.makeText(this@LoginActivity, "카카오 아이디 로그인 성공! 1 -> ${user?.id}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "카카오 아이디 로그인 성공! 1 -> ${user?.id}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     val loginObject = UserLoginInfo(
                         LoginType.KAKAO.name.lowercase(),
                         user?.id.toString(),
@@ -127,9 +133,14 @@ class LoginActivity : AppCompatActivity() {
                                     dataStoreViewModel.putAuthToken(resultData.accessToken)
                                     dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                     dataStoreViewModel.putAuthId(resultData.userId.toInt())
-                                    Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        this@LoginActivity,
+                                        "로그인 성공!",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     startHomeActivity()
                                 }
+
                                 is ApiResult.Error -> Toast.makeText(
                                     this@LoginActivity,
                                     result.message,
@@ -154,7 +165,40 @@ class LoginActivity : AppCompatActivity() {
                     // 카카오톡에 연결된 카카오계정이 없는 경우, 카카오계정으로 로그인 시도
                     UserApiClient.instance.loginWithKakaoAccount(this, callback = kakaoCallback)
                 } else if (token != null) {
-                    Toast.makeText(this@LoginActivity, "카카오 아이디 로그인 성공! 2 -> ${token.accessToken}", Toast.LENGTH_SHORT).show()
+                    UserApiClient.instance.me { user, err ->
+                        if (err != null) return@me
+                        val loginObject = UserLoginInfo(
+                            LoginType.KAKAO.name.lowercase(),
+                            user?.id.toString(),
+                            user?.kakaoAccount?.email ?: "",
+                            user?.kakaoAccount?.name ?: ""
+                        )
+                        lifecycleScope.launch {
+                            loginViewModel.startLogin(loginObject).collect { result ->
+                                when (result) {
+                                    is ApiResult.Success -> {
+                                        val resultData = result.data
+                                        dataStoreViewModel.putUserName(resultData.name)
+                                        dataStoreViewModel.putAuthToken(resultData.accessToken)
+                                        dataStoreViewModel.putRefreshToken(resultData.refreshToken)
+                                        dataStoreViewModel.putAuthId(resultData.userId.toInt())
+                                        Toast.makeText(
+                                            this@LoginActivity,
+                                            "로그인 성공!",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        startHomeActivity()
+                                    }
+
+                                    is ApiResult.Error -> Toast.makeText(
+                                        this@LoginActivity,
+                                        result.message,
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
+                        }
+                    }
                 }
             }
         } else {
@@ -187,9 +231,11 @@ class LoginActivity : AppCompatActivity() {
                                 dataStoreViewModel.putAuthToken(resultData.accessToken)
                                 dataStoreViewModel.putRefreshToken(resultData.refreshToken)
                                 dataStoreViewModel.putAuthId(resultData.userId.toInt())
-                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "로그인 성공!", Toast.LENGTH_SHORT)
+                                    .show()
                                 startHomeActivity()
                             }
+
                             is ApiResult.Error -> Toast.makeText(
                                 this@LoginActivity,
                                 result.message,

@@ -66,6 +66,12 @@
                     android:scheme="kakaodd2a2a9fa7c29f1a6da2e928efbaee85" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove">
+        </provider>
     </application>
 
 </manifest>
