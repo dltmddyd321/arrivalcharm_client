@@ -13,7 +13,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class CoreApplication : Application(), Configuration.Provider {
+class CoreApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         KakaoSdk.init(this, "dd2a2a9fa7c29f1a6da2e928efbaee85")
@@ -26,12 +26,12 @@ class CoreApplication : Application(), Configuration.Provider {
         registerActivityLifecycleCallbacks(AppLifecycleCallbacks())
     }
 
-    @Inject
-    lateinit var workerFactory: HiltWorkerFactory
-
-    override val workManagerConfiguration = Configuration.Builder()
-        .setWorkerFactory(workerFactory)
-        .build()
+//    @Inject
+//    lateinit var workerFactory: HiltWorkerFactory
+//
+//    override val workManagerConfiguration = Configuration.Builder()
+//        .setWorkerFactory(workerFactory)
+//        .build()
 
     private inner class AppLifecycleCallbacks : ActivityLifecycleCallbacks {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {

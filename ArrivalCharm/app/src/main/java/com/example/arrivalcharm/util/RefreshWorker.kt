@@ -2,6 +2,8 @@ package com.example.arrivalcharm.util
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
+import androidx.lifecycle.ViewModelProvider
+import androidx.work.CoroutineWorker
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import androidx.work.impl.model.Dependency
@@ -20,25 +22,10 @@ import timber.log.Timber
 @HiltWorker
 class RefreshWorker @AssistedInject constructor(
     @Assisted context: Context,
-    @Assisted params: WorkerParameters,
-    @NetworkModule.Main private val tokenRefreshViewModel: TokenRefreshViewModel,
-    private val dataStoreViewModel: DatastoreViewModel
-) : Worker(context, params) {
-    override fun doWork(): Result {
-        CoroutineScope(Dispatchers.IO).launch {
-            val refreshToken = dataStoreViewModel.getRefreshToken()
-            tokenRefreshViewModel.refreshToken(refreshToken).collect {
-                when (it) {
-                    is ApiResult.Success -> {
-                        val newRefreshToken = it.data?.refreshToken
-                        val newAccessToken = it.data?.accessToken
-                        if (!newRefreshToken.isNullOrEmpty()) dataStoreViewModel.putRefreshToken(newRefreshToken)
-                        if (!newAccessToken.isNullOrEmpty()) dataStoreViewModel.putAuthToken(newAccessToken)
-                    }
-                    else -> Timber.d("토큰 갱신 실패!")
-                }
-            }
-        }
+    @Assisted params: WorkerParameters
+) : CoroutineWorker(context, params) {
+
+    override suspend fun doWork(): Result {
         return Result.success()
     }
 }
