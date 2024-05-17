@@ -26,13 +26,6 @@ class CoreApplication : Application() {
         registerActivityLifecycleCallbacks(AppLifecycleCallbacks())
     }
 
-//    @Inject
-//    lateinit var workerFactory: HiltWorkerFactory
-//
-//    override val workManagerConfiguration = Configuration.Builder()
-//        .setWorkerFactory(workerFactory)
-//        .build()
-
     private inner class AppLifecycleCallbacks : ActivityLifecycleCallbacks {
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
             Timber.tag("Lifecycle").d("Created: " + activity.localClassName)
