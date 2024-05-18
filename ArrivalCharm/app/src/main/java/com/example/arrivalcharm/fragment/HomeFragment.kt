@@ -14,13 +14,17 @@ import com.example.arrivalcharm.activity.PagingTestActivity
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentHomeBinding
+import com.example.arrivalcharm.datamodel.Location
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
 import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.example.arrivalcharm.viewmodel.FetchRecentViewModel
+import com.example.arrivalcharm.viewmodel.SaveDestinationViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.util.UUID
+import kotlin.math.ln
 
 class HomeFragment : Fragment() {
 
@@ -34,11 +38,16 @@ class HomeFragment : Fragment() {
     @NetworkModule.Main
     private val fetchRecentViewModel: FetchRecentViewModel by activityViewModels()
 
+    @NetworkModule.Main
+    private val saveDestinationViewModel: SaveDestinationViewModel by activityViewModels()
+
     companion object {
-        fun newInstance(address: String): HomeFragment {
+        fun newInstance(address: String, lat: Double, lng: Double): HomeFragment {
             val fragment = HomeFragment()
             val args = Bundle()
             args.putString("address", address)
+            args.putDouble("lat", lat)
+            args.putDouble("lng", lng)
             fragment.arguments = args
             return fragment
         }
@@ -85,6 +94,33 @@ class HomeFragment : Fragment() {
         }
 
         setCurrentPositionText()
+
+        binding.homeBtn.setOnClickListener { //id: 2
+            val address = arguments?.getString("address") ?: return@setOnClickListener
+            val lat = arguments?.getDouble("lat") ?: return@setOnClickListener
+            val lng = arguments?.getDouble("lng") ?: return@setOnClickListener
+            val location = Location(address = address, lon = lng.toString(), lat = lat.toString(), createdAt = System.currentTimeMillis(), name = "Home", number = 432)
+            lifecycleScope.launch {
+                val token = dataStoreViewModel.getAuthToken()
+                saveDestinationViewModel.saveDestination(token, location).collect {
+                    when (it) {
+                        is ApiResult.Success -> {
+                            Toast.makeText(context, "Home 위치 저장 완료!", Toast.LENGTH_SHORT).show()
+                        }
+                        is ApiResult.Error -> return@collect
+                    }
+                }
+
+//                saveDestinationViewModel.fetchDestinationInfo(token, 2).collect {
+//                    when (it) {
+//                        is ApiResult.Success -> {
+//                            Toast.makeText(context, "Home 위치 저장 완료!", Toast.LENGTH_SHORT).show()
+//                        }
+//                        is ApiResult.Error -> return@collect
+//                    }
+//                }
+            }
+        }
     }
 
     private fun setCurrentPositionText() = with(binding) {

@@ -48,7 +48,7 @@ class HomeActivity : AppCompatActivity() {
         val lng = intent?.getDoubleExtra("lng", 0.0) ?: DistanceManager.DefaultLng
         val address = intent?.getStringExtra("address") ?: ""
 
-        homeFragment = HomeFragment.newInstance(address)
+        homeFragment = HomeFragment.newInstance(address, lat, lng)
         mapFragment = MapFragment.newInstance(lat, lng)
         settingFragment = SettingFragment()
 

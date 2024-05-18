@@ -29,4 +29,19 @@ class SaveDestinationViewModel @Inject constructor(
             emit(ApiResult.Error(e.localizedMessage ?: "An error occurred", 0))
         }
     }
+
+    fun fetchDestinationInfo(header: String, id: Int): Flow<ApiResult<Boolean>> = flow {
+        try {
+            val field : HashMap<String, String> = HashMap()
+            field["Authorization"] = header
+            val response = apiService.fetchDestination(field, id)
+            if (response.isSuccessful) {
+                emit(ApiResult.Success(true))
+            } else {
+                emit(ApiResult.Error("Failed...", response.code()))
+            }
+        } catch (e: java.lang.Exception) {
+            emit(ApiResult.Error(e.localizedMessage ?: "An error occurred", 0))
+        }
+    }
 }
