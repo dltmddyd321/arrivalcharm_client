@@ -34,8 +34,23 @@ class RefreshWorker @AssistedInject constructor(
             viewModelFactory
         )[DatastoreViewModel::class.java]
 
-        val refreshToken = datastoreViewModel.getRefreshToken()
+        val tokenRefreshViewModel = ViewModelProvider(
+            ViewModelStore(),
+            viewModelFactory
+        )[TokenRefreshViewModel::class.java]
 
+        val refreshToken = datastoreViewModel.getRefreshToken()
+        tokenRefreshViewModel.refreshToken(refreshToken).collect {
+            when (it) {
+                is ApiResult.Success -> {
+                    val newRefreshToken = it.data?.refreshToken
+                    val newAccessToken = it.data?.accessToken
+                    if (!newRefreshToken.isNullOrEmpty()) datastoreViewModel.putRefreshToken(newRefreshToken)
+                    if (!newAccessToken.isNullOrEmpty()) datastoreViewModel.putAuthToken(newAccessToken)
+                }
+                else -> Timber.d("토큰 갱신 실패!")
+            }
+        }
         return Result.success()
     }
 }
