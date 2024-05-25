@@ -16,6 +16,7 @@ import com.example.arrivalcharm.api.NetworkModule
 import com.example.arrivalcharm.databinding.FragmentHomeBinding
 import com.example.arrivalcharm.datamodel.Location
 import com.example.arrivalcharm.db.datastore.DatastoreViewModel
+import com.example.arrivalcharm.db.room.LocationViewModel
 import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.example.arrivalcharm.viewmodel.FetchRecentViewModel
 import com.example.arrivalcharm.viewmodel.SaveDestinationViewModel
@@ -27,6 +28,8 @@ import java.util.UUID
 import kotlin.math.ln
 
 class HomeFragment : Fragment() {
+
+    private val locationViewModel: LocationViewModel by activityViewModels()
 
     private lateinit var binding: FragmentHomeBinding
 
@@ -105,6 +108,7 @@ class HomeFragment : Fragment() {
                 saveDestinationViewModel.saveDestination(token, location).collect {
                     when (it) {
                         is ApiResult.Success -> {
+                            locationViewModel.insertLocation(location)
                             Toast.makeText(context, "Home 위치 저장 완료!", Toast.LENGTH_SHORT).show()
                         }
                         is ApiResult.Error -> return@collect
