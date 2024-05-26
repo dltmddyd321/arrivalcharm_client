@@ -58,7 +58,7 @@ dependencies {
     //Google Maps
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
-    implementation 'com.google.android.libraries.places:places:3.4.0'
+    implementation 'com.google.android.libraries.places:places:2.7.0'
 
     //Splash
     implementation 'androidx.core:core-splashscreen:1.1.0-alpha02'
@@ -98,7 +98,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
 
     // Naver SDK
-    implementation 'com.navercorp.nid:oauth-jdk8:5.1.0' // jdk 8
+    implementation("com.navercorp.nid:oauth-jdk8:5.9.1") // jdk 8
 
     // Architectural Components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2"

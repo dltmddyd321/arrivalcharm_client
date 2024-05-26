@@ -20,6 +20,8 @@ import com.example.arrivalcharm.db.room.LocationViewModel
 import com.example.arrivalcharm.viewmodel.AdviceViewModel
 import com.example.arrivalcharm.viewmodel.FetchRecentViewModel
 import com.example.arrivalcharm.viewmodel.SaveDestinationViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -105,13 +107,17 @@ class HomeFragment : Fragment() {
             val location = Location(address = address, lon = lng.toString(), lat = lat.toString(), createdAt = System.currentTimeMillis(), name = "Home", number = 432)
             lifecycleScope.launch {
                 val token = dataStoreViewModel.getAuthToken()
-                saveDestinationViewModel.saveDestination(token, location).collect {
-                    when (it) {
-                        is ApiResult.Success -> {
-                            locationViewModel.insertLocation(location)
-                            Toast.makeText(context, "Home 위치 저장 완료!", Toast.LENGTH_SHORT).show()
+                locationViewModel.insertLocation(location)
+                CoroutineScope(Dispatchers.IO).launch {
+                    saveDestinationViewModel.saveDestination(token, location).collect {
+                        when (it) {
+                            is ApiResult.Success -> {
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    Toast.makeText(context, "Home 위치 저장 완료!", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                            is ApiResult.Error -> return@collect
                         }
-                        is ApiResult.Error -> return@collect
                     }
                 }
 

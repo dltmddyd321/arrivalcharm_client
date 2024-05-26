@@ -1,7 +1,9 @@
 package com.example.arrivalcharm.db.room
 
 import com.example.arrivalcharm.datamodel.Location
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -15,10 +17,14 @@ class LocationRepository @Inject constructor(
     }
 
     fun insertLocation(location: Location) {
-        locationDao.insertLocation(location)
+        CoroutineScope(Dispatchers.IO).launch {
+            locationDao.insertLocation(location)
+        }
     }
 
     fun deleteLocation(location: Location) {
-        locationDao.deleteLocation(location)
+        CoroutineScope(Dispatchers.IO).launch {
+            locationDao.deleteLocation(location)
+        }
     }
 }
