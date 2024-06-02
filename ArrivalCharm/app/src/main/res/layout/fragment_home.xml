@@ -1,97 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".fragment.HomeFragment">
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/wiseText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="···"
+        android:textAlignment="center"
+        android:textColor="@color/black" />
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
+
+        <ImageView
+            android:id="@+id/searchView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_search_24" />
 
         <TextView
-            android:id="@+id/wiseText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="명언"
-            android:textAlignment="center" />
-
-        <androidx.appcompat.widget.SearchView
-            android:id="@+id/mainSearch"
-            android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:focusable="true"
-            android:padding="20dp"
-            app:queryHint="검색어를 입력하시오" />
-
-        <LinearLayout
-            android:id="@+id/currentLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginStart="15dp"
-                android:src="@drawable/baseline_location_pin_24" />
-
-            <TextView
-                android:id="@+id/currentPosText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="15dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="현재 주소"
-                android:textAlignment="textStart"
-                android:textColor="@color/black"
-                android:textSize="16dp"
-                android:textStyle="normal"
-                tools:ignore="RtlCompat" />
-
-        </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/horizontal_recyclerview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            tools:listitem="@layout/item_horizontal_location" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/homeBtn"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_margin="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/background_btn"
-                android:text="현재 위치 갱신" />
-
-            <Button
-                android:id="@+id/testBtn"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_margin="30dp"
-                android:layout_weight="1"
-                android:background="@drawable/background_btn"
-                android:text="테스트!!" />
-
-        </LinearLayout>
-
+            android:text="목적지 검색하기"
+            android:textColor="@color/black" />
 
     </LinearLayout>
 
-</FrameLayout>
+    <LinearLayout
+        android:id="@+id/currentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="visible">
+
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="15dp"
+            android:src="@drawable/baseline_location_pin_24" />
+
+        <TextView
+            android:id="@+id/currentPosText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginEnd="15dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="현재 주소"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="normal"
+            tools:ignore="RtlCompat" />
+
+    </LinearLayout>
+
+    <!-- RecyclerView를 사용하지 않으므로 주석 처리 -->
+    <!-- <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/horizontal_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        tools:listitem="@layout/item_horizontal_location" /> -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/homeBtn"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_btn"
+            android:text="현재 위치 갱신" />
+
+        <Button
+            android:id="@+id/testBtn"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_margin="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/background_btn"
+            android:text="테스트!!" />
+
+    </LinearLayout>
+
+</LinearLayout>

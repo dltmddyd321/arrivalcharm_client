@@ -1,15 +1,18 @@
 package com.example.arrivalcharm.fragment
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import com.example.arrivalcharm.R
 import com.example.arrivalcharm.activity.PagingTestActivity
 import com.example.arrivalcharm.api.ApiResult
 import com.example.arrivalcharm.api.NetworkModule
@@ -22,12 +25,9 @@ import com.example.arrivalcharm.viewmodel.FetchRecentViewModel
 import com.example.arrivalcharm.viewmodel.SaveDestinationViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.util.UUID
-import kotlin.math.ln
 
 class HomeFragment : Fragment() {
 
@@ -80,7 +80,7 @@ class HomeFragment : Fragment() {
             }
         }.launchIn(viewLifecycleOwner.lifecycleScope)
 
-        binding.mainSearch.setOnSearchClickListener {
+        binding.searchView.setOnClickListener {
             lifecycleScope.launch {
                 val token = dataStoreViewModel.getAuthToken()
                 fetchRecentViewModel.fetchRecentSearch(token).collect {
