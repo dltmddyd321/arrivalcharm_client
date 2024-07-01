@@ -70,7 +70,12 @@ dependencies {
     implementation "androidx.room:room-runtime:2.5.2"
     implementation "androidx.compose.ui:ui:$compose_ui_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
+    implementation platform('androidx.compose:compose-bom:2024.04.01')
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.material3:material3'
+    androidTestImplementation platform('androidx.compose:compose-bom:2024.04.01')
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+    debugImplementation 'androidx.compose.ui:ui-tooling'
     kapt "androidx.room:room-compiler:2.5.2"
 
     // KAKAO SDK
@@ -150,6 +155,8 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.0.0")
     // When using Java.
     annotationProcessor("androidx.hilt:hilt-compiler:1.0.0")
+
+    implementation "com.google.accompanist:accompanist-flowlayout:0.24.13-rc"
 }
 
 kapt {
