@@ -18,7 +18,7 @@ class RecentRepository @Inject constructor(
 
     fun updateRecent(recent: Recent) {
         CoroutineScope(Dispatchers.IO).launch {
-            recentDao.upsert(recent)
+            recentDao.insert(recent)
         }
     }
 

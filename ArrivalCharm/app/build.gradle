@@ -77,6 +77,7 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
     debugImplementation 'androidx.compose.ui:ui-tooling'
     kapt "androidx.room:room-compiler:2.5.2"
+    implementation "androidx.room:room-ktx:2.6.1"
 
     // KAKAO SDK
     implementation 'com.kakao.sdk:v2-user:2.10.0'
